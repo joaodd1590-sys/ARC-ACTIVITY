@@ -1,44 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SafeTipJar DApp</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeTipJar DApp - Arc Testnet</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 20px; min-height: 100vh; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { color: #00D4FF; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 20px; }
+        button { background: #00D4FF; color: white; border: none; padding: 15px 30px; margin: 10px; border-radius: 8px; font-size: 18px; cursor: pointer; transition: background 0.3s; }
+        button:hover { background: #00a8cc; }
+        input { padding: 12px; width: 200px; font-size: 18px; border: 1px solid #ccc; border-radius: 8px; margin: 10px; text-align: center; }
+        #status { margin-top: 20px; font-weight: bold; color: green; min-height: 20px; }
+        .tx-link { color: #00D4FF; text-decoration: none; }
+        .tx-link:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-  <h1>SafeTipJar DApp</h1>
+    <div class="container">
+        <h1>SafeTipJar DApp 🚀</h1>
+        <p>Send a quick USDC tip on Arc Testnet. Instant & free!</p>
+        <button onclick="connectWallet()">Connect Wallet</button>
+        <br>
+        <input type="number" id="amount" placeholder="1.00" min="0.01" step="0.01"> USDC
+        <br>
+        <button onclick="sendTip()">Send Tip</button>
+        <div id="status"></div>
+        <p style="font-size: 12px; color: #999; margin-top: 20px;">Contract: 0x9f46FaE692A2F7A97b352bc788865E016164138f</p>
+    </div>
 
-  <button id="connectButton">Connect Wallet</button>
-  <p id="status"></p>
+    <script>
+        const USDC_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'; // USDC testnet Arc
+        const CONTRACT_ADDRESS = '0x9f46FaE692A2F7A97b352bc788865E016164138f'; // Seu contrato
+        const ABI = [
+            "function tip(uint256 amount) external",
+            "function balance() external view returns (uint256)"
+        ];
+        const ERC20_ABI = [
+            "function approve(address spender, uint256 amount) external returns (bool)"
+        ];
 
-  <script>
-    const connectButton = document.getElementById("connectButton");
-    const statusText = document.getElementById("status");
+        let signer, address;
 
-    // Connect MetaMask
-    connectButton.addEventListener("click", async () => {
-      if (typeof window.ethereum === "undefined") {
-        statusText.innerText = "MetaMask not detected!";
-        alert("MetaMask not detected — install it first.");
-        return;
-      }
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send("eth_requestAccounts", []);
+                    signer = provider.getSigner();
+                    address = await signer.getAddress();
+                    document.getElementById('status').innerText = `Connected: ${address.slice(0,6)}...${address.slice(-4)}`;
+                } catch (error) {
+                    document.getElementById('status').innerText = 'Error connecting wallet';
+                }
+            } else {
+                alert('Install MetaMask!');
+            }
+        }
 
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts"
-        });
+        async function sendTip() {
+            if (!signer) {
+                alert('Connect wallet first!');
+                return;
+            }
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!amount || amount <= 0) {
+                alert('Enter a valid amount');
+                return;
+            }
+            try {
+                const weiAmount = ethers.utils.parseUnits(amount.toString(), 6); // USDC 6 decimals
 
-        const wallet = accounts[0];
-        statusText.innerText = `Connected: ${wallet}`;
-        console.log("Wallet connected:", wallet);
+                const usdc = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
 
-      } catch (error) {
-        console.error(error);
-        statusText.innerText = "Connection failed!";
-      }
-    });
-  </script>
+                document.getElementById('status').innerText = 'Approving USDC...';
 
+                const approveTx = await usdc.approve(CONTRACT_ADDRESS, weiAmount);
+                await approveTx.wait();
+
+                document.getElementById('status').innerText = 'Sending tip...';
+
+                const tipTx = await contract.tip(weiAmount);
+                await tipTx.wait();
+
+                document.getElementById('status').innerHTML = `Tip sent! <a href="https://testnet.arcscan.app/tx/${tipTx.hash}" target="_blank" class="tx-link">View on Explorer</a>`;
+            } catch (error) {
+                document.getElementById('status').innerText = 'Error: ' + error.message;
+            }
+        }
+    </script>
 </body>
 </html>
