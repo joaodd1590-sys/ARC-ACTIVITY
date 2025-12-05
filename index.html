@@ -55,15 +55,39 @@
 
 <body>
 
-    <h1>SafeTipJar — ARC Testnet</h1>
+   <h1>SafeTipJar DApp</h1>
 
-    <div class="card">
-        <h3>Connect to MetaMask</h3>
-        <button onclick="connectWallet()">Connect Wallet</button>
-        <p id="status">Wallet not connected</p>
-    </div>
+  <button id="connectButton">Connect Wallet</button>
+  <p id="status"></p>
 
-    <script src="script.js"></script>
+  <script>
+    const connectButton = document.getElementById("connectButton");
+    const statusText = document.getElementById("status");
+
+    // Connect MetaMask
+    connectButton.addEventListener("click", async () => {
+      if (typeof window.ethereum === "undefined") {
+        statusText.innerText = "MetaMask not detected!";
+        alert("MetaMask not detected — install it first.");
+        return;
+      }
+
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts"
+        });
+
+        const wallet = accounts[0];
+        statusText.innerText = `Connected: ${wallet}`;
+        console.log("Wallet connected:", wallet);
+
+      } catch (error) {
+        console.error(error);
+        statusText.innerText = "Connection failed!";
+      }
+    });
+  </script>
+    
 </body>
 
 </html>
