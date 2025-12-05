@@ -1,136 +1,44 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeTipJar - Arc Testnet</title>
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #0f0c29;
-            background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
-            color: white;
-            text-align: center;
-            padding: 50px 20px;
-            margin: 0;
-        }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: rgba(255,255,255,0.1);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        h1 { font-size: 2.5em; margin-bottom: 10px; }
-        p { font-size: 1.2em; margin-bottom: 30px; }
-        input {
-            padding: 15px;
-            width: 200px;
-            font-size: 1.5em;
-            text-align: center;
-            border: none;
-            border-radius: 10px;
-            margin: 10px;
-        }
-        button {
-            background: #00d4ff;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.3em;
-            border-radius: 10px;
-            cursor: pointer;
-            margin: 10px;
-            transition: 0.3s;
-        }
-        button:hover { background: #00a8cc; }
-        #status {
-            margin-top: 20px;
-            font-size: 1.1em;
-            min-height: 30px;
-        }
-        .contract {
-            font-size: 0.8em;
-            margin-top: 30px;
-            word-break: break-all;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeTipJar DApp</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>SafeTipJar</h1>
-        <p>Gorjeta em USDC na Arc Testnet<br>Instantânea • Sem taxas</p>
+  <h1>SafeTipJar DApp</h1>
 
-        <button onclick="connectWallet()">Conectar Wallet</button>
-        <br>
-        <input type="number" id="amount" placeholder="1.00" step="0.01">
-        <br>
-        <button onclick="sendTip()">Enviar Gorjeta</button>
+  <button id="connectButton">Connect Wallet</button>
+  <p id="status"></p>
 
-        <div id="status"></div>
+  <script>
+    const connectButton = document.getElementById("connectButton");
+    const statusText = document.getElementById("status");
 
-        <div class="contract">
-            Contrato: 0x9f46FaE692A2F7A97b352bc788865E016164138f<br>
-            <a href="https://testnet.arcscan.app/address/0x9f46FaE692A2F7A97b352bc788865E016164138f" target="_blank" style="color:#00d4ff">
-                Ver no Explorer
-            </a>
-        </div>
-    </div>
+    // Connect MetaMask
+    connectButton.addEventListener("click", async () => {
+      if (typeof window.ethereum === "undefined") {
+        statusText.innerText = "MetaMask not detected!";
+        alert("MetaMask not detected — install it first.");
+        return;
+      }
 
-    <script>
-        const USDC = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
-        const TIPJAR = "0x9f46FaE692A2F7A97b352bc788865E016164138f";
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts"
+        });
 
-        const TIP_ABI = ["function tip(uint256 amount) external"];
-        const ERC20_ABI = ["function approve(address spender, uint256 amount) external returns (bool)"];
+        const wallet = accounts[0];
+        statusText.innerText = `Connected: ${wallet}`;
+        console.log("Wallet connected:", wallet);
 
-        let signer;
+      } catch (error) {
+        console.error(error);
+        statusText.innerText = "Connection failed!";
+      }
+    });
+  </script>
 
-        async function connectWallet() {
-            if (!window.ethereum) return alert("MetaMask não detectada!");
-
-            try {
-                await window.ethereum.request({ method: "eth_requestAccounts" });
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                const addr = await signer.getAddress();
-                document.getElementById("status").innerHTML = 
-                    `Conectado: <b>${addr.slice(0,6)}...${addr.slice(-4)}</b>`;
-            } catch (e) {
-                alert("Erro ao conectar");
-            }
-        }
-
-        async function sendTip() {
-            if (!signer) return alert("Conecte a wallet primeiro!");
-
-            const valor = document.getElementById("amount").value;
-            if (!valor || valor <= 0) return alert("Digite um valor válido");
-
-            try {
-                document.getElementById("status").innerText = "Aprovando USDC...";
-
-                const usdc = new ethers.Contract(USDC, ERC20_ABI, signer);
-                const tipjar = new ethers.Contract(TIPJAR, TIP_ABI, signer);
-                const amount = ethers.utils.parseUnits(valor, 6);
-
-                await (await usdc.approve(TIPJAR, amount)).wait();
-
-                document.getElementById("status").innerText = "Enviando gorjeta...";
-
-                const tx = await tipjar.tip(amount);
-                await tx.wait();
-
-                document.getElementById("status").innerHTML = 
-                    `Gorjeta enviada! <a href="https://testnet.arcscan.app/tx/${tx.hash}" target="_blank" style="color:#00d4ff">Ver transação</a>`;
-                
-                document.getElementById("amount").value = "";
-            } catch (e) {
-                document.getElementById("status").innerText = "Erro: " + e.message;
-            }
-        }
-    </script>
 </body>
 </html>
