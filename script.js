@@ -1,49 +1,18 @@
-// SafeTipJar contract on ARC testnet
-const CONTRACT_ADDRESS = "0x9f46FaE692A2F7A97b352bc788865E016164138f";
+async function connectWallet() {
+    if (typeof window.ethereum !== "undefined") {
+        try {
+            const accounts = await window.ethereum.request({
+                method: "eth_requestAccounts"
+            });
 
-const ABI = [
-    "function tip(uint256 amount) external",
-];
+            document.getElementById("status").innerText =
+                "Connected: " + accounts[0];
 
-let provider;
-let signer;
-let contract;
-
-// Connect MetaMask
-document.getElementById("connectBtn").onclick = async () => {
-    if (!window.ethereum) {
+        } catch (error) {
+            console.error(error);
+            alert("Failed to connect wallet.");
+        }
+    } else {
         alert("MetaMask not detected!");
-        return;
     }
-
-    provider = new ethers.BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    signer = await provider.getSigner();
-
-    contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-
-    alert("Wallet connected!");
-};
-
-// Send tip
-document.getElementById("tipBtn").onclick = async () => {
-    if (!contract) {
-        alert("Connect your wallet first!");
-        return;
-    }
-
-    const amount = document.getElementById("amount").value;
-    if (!amount || amount <= 0) {
-        alert("Enter valid amount.");
-        return;
-    }
-
-    try {
-        const tx = await contract.tip(amount);
-        await tx.wait();
-        alert("Tip sent!");
-    } catch (err) {
-        console.error(err);
-        alert("Transaction failed.");
-    }
-};
+}
