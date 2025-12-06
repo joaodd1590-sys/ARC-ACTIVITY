@@ -3,222 +3,112 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ARC ACTIVITY TRACKER</title>
+  <title>Arc Activity Tracker</title>
+
+  <!-- Ícone e fontes -->
   <link rel="icon" type="image/png" href="https://i.imgur.com/0ZK0l9g.png"/>
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
-  <style>
-    :root{
-      --bg:#05030a; --neon-cyan:#6cf2c2; --neon-pink:#ff4db8; --muted:#8f98a6;
-    }
-    body{margin:0;background:#05030a;font-family:Inconsolata,monospace;color:#e6eef6}
-    .wrap{max-width:1200px;margin:30px auto;padding:20px;display:grid;grid-template-columns:1fr 380px;gap:25px}
-
-    .panel{background:rgba(255,255,255,0.02);border-radius:10px;padding:16px;border:1px solid rgba(255,255,255,0.05)}
-    .snapshot-panel{height:fit-content}
-
-    .title-text{font-family:Orbitron;color:var(--neon-cyan);font-size:26px;margin-bottom:4px}
-    .subtitle{color:var(--muted);margin-bottom:15px}
-
-    input.address{width:100%;padding:12px;border-radius:8px;border:none;background:rgba(0,0,0,0.35);color:#e6eef6;margin-bottom:10px}
-    button.action{padding:12px;width:160px;border-radius:8px;border:none;background:var(--neon-pink);color:#041017;font-weight:700;cursor:pointer}
-
-    .summary{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
-    .stat{padding:10px;min-width:120px;border-radius:8px;background:rgba(255,255,255,0.03)}
-    .label{font-size:12px;color:var(--muted)}
-    .num{font-weight:bold;color:var(--neon-cyan)}
-
-    .terminal{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-height:260px;max-height:420px;overflow:auto;border:1px solid rgba(255,255,255,0.05)}
-    .tx{padding:10px;border-bottom:1px dashed rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;gap:10px}
-    .hash{color:var(--neon-pink);font-weight:bold;max-width:480px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .meta{color:var(--muted);font-size:12px;margin-top:6px}
-    .actions{display:flex;gap:8px}
-    .btn-ghost{border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--muted);border-radius:8px;padding:6px 10px;cursor:pointer}
-    .badge-in{background:#6cf2c2;color:#041017;padding:4px 10px;border-radius:16px;font-weight:bold}
-    .badge-out{background:#ff4db8;color:#041017;padding:4px 10px;border-radius:16px;font-weight:bold}
-
-    .side-title{font-family:Orbitron;color:var(--neon-pink);font-size:20px;margin-bottom:8px}
-
-    .snapshot .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,0.06)}
-    .snapshot .row:last-child{border-bottom:none}
-
-    .copy{display:flex;gap:8px;margin-top:12px}
-    .copy button{flex:1;padding:10px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
-    .copy button:first-child{background:var(--neon-cyan);color:#041017}
-    .copy button:last-child{background:#111;color:var(--neon-pink);border:1px solid rgba(255,255,255,0.1)}
-
-    .leaderboard{margin-top:12px;max-height:280px;overflow:auto;border-radius:8px;background:rgba(255,255,255,0.03);padding:10px}
-    .lb-row{padding:10px;border-bottom:1px dashed rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center}
-    .lb-row:last-child{border-bottom:none}
-    .lb-rank{font-weight:bold;color:var(--neon-cyan)}
-    .lb-addr{font-size:13px;max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .view-btn{background:transparent;border:1px solid rgba(255,255,255,0.15);padding:6px 10px;border-radius:8px;color:var(--neon-pink)}
-
-    .copy-toast{
-      position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
-      background:var(--neon-pink);padding:10px 20px;border-radius:10px;color:#041017;
-      opacity:0;pointer-events:none;font-weight:bold;transition:0.25s;z-index:999
-    }
-    .copy-toast.show{opacity:1;transform:translateX(-50%) translateY(-10px)}
-  </style>
+  <!-- CSS externo -->
+  <link rel="stylesheet" href="style.css"/>
 </head>
-
 <body>
-<div id="copyToast" class="copy-toast">Copied!</div>
+  <!-- Toast copy -->
+  <div id="copyToast" class="copy-toast">Copied!</div>
 
-<div class="wrap">
-
-  <!-- LEFT PANEL -->
-  <div class="panel">
-    <div class="title-text">ARC ACTIVITY TRACKER</div>
-    <div class="subtitle">Community scanner — shows live activity on Arc Testnet</div>
-
-    <input id="addr" class="address" placeholder="0x... wallet address"/>
-    <button id="check" class="action">Run Scan</button>
-
-    <div id="summary" class="summary" style="display:none">
-      <div class="stat"><div class="label">Total</div><div id="tcount" class="num">0</div></div>
-      <div class="stat"><div class="label">First Tx</div><div id="first" class="num">--</div></div>
-      <div class="stat"><div class="label">Last Tx</div><div id="last" class="num">--</div></div>
-      <div class="stat"><div class="label">Status</div><div id="status" class="num">ACTIVE</div></div>
-    </div>
-
-    <!-- TERMINAL LIST -->
-    <div id="terminal" class="terminal">
-      <div style="opacity:0.6">Run a scan to load recent transactions.</div>
-    </div>
-  </div>
-
-  <!-- RIGHT PANEL -->
-  <div class="panel snapshot-panel">
-    <div class="side-title">Wallet Snapshot</div>
-
-    <div class="snapshot">
-      <div class="row"><div>Wallet</div><div id="snapWallet">--</div></div>
-      <div class="row"><div>Network</div><div>Arc Testnet</div></div>
-      <div class="row"><div>Tx Count</div><div id="snapTx">--</div></div>
-      <div class="row"><div>Active</div><div id="snapActive"><span class="badge-out">No</span></div></div>
-    </div>
-
-    <div class="copy">
-      <button id="copyLink">Copy Link</button>
-      <button id="openExplorer">Open in ArcScan</button>
-    </div>
-
-    <div style="margin-top:25px;margin-bottom:10px;color:var(--neon-cyan);font-weight:bold">
-      Top Active Wallets
-    </div>
-
-    <div class="leaderboard" id="leaderboard"></div>
-  </div>
-</div>
-
-
-<script>
-const $ = s => document.querySelector(s);
-const terminal = $("#terminal");
-const summary = $("#summary");
-const tcount = $("#tcount"), first=$("#first"), last=$("#last"), status=$("#status");
-const snapWallet=$("#snapWallet"), snapTx=$("#snapTx"), snapActive=$("#snapActive");
-const copyToast=$("#copyToast");
-const leaderboard=$("#leaderboard");
-const addrInput=$("#addr");
-
-function toast(msg){ copyToast.textContent=msg; copyToast.classList.add("show"); setTimeout(()=>copyToast.classList.remove("show"),1200); }
-function appendTx(html){ let d=document.createElement("div"); d.className="tx"; d.innerHTML=html; terminal.prepend(d); }
-
-async function runScan(){
-  const w = addrInput.value.trim();
-  if(!w.startsWith("0x")) return alert("Enter valid address");
-
-  terminal.innerHTML="<div style='opacity:0.6'>Scanning...</div>";
-  summary.style.display="none";
-
-  const r = await fetch(`/api/activity?address=${w}`);
-  const data = await r.json();
-  const txs = data.transactions || [];
-
-  snapWallet.textContent=w;
-  tcount.textContent=txs.length;
-  snapTx.textContent=txs.length;
-
-  first.textContent = txs.length ? txs[txs.length-1].time : "--";
-  last.textContent  = txs.length ? txs[0].time              : "--";
-
-  if(txs.length){
-    status.textContent="ACTIVE";
-    status.style.color="#6cf2c2";
-    snapActive.innerHTML='<span class="badge-in">Yes</span>';
-  } else {
-    status.textContent="NO ACTIVITY";
-    status.style.color="#ff4db8";
-    snapActive.innerHTML='<span class="badge-out">No</span>';
-  }
-
-  summary.style.display="flex";
-  terminal.innerHTML="";
-
-  txs.forEach(tx=>{
-    const dir = tx.from.toLowerCase()===w.toLowerCase() ? "OUT" : "IN";
-    const badge = dir==="IN" ? `<span class="badge-in">IN</span>` : `<span class="badge-out">OUT</span>`;
-    const html = `
-      <div class="left">
-        <div class="hash">${tx.hash}</div>
-        <div class="meta">${tx.from} → ${tx.to} • ${tx.value} • ${tx.time}</div>
-      </div>
-      <div class="actions">
-        ${badge}
-        <button class="btn-ghost" onclick="navigator.clipboard.writeText('${tx.hash}'); toast('Copied!')">Copy</button>
-        <button class="btn-ghost" onclick="window.open('${tx.link}','_blank')">Explorer</button>
-      </div>`;
-    appendTx(html);
-  });
-}
-
-$("#check").onclick=runScan;
-addrInput.onkeydown=e=>{ if(e.key==="Enter") runScan(); };
-
-$("#copyLink").onclick=()=>{
-  const w = addrInput.value.trim();
-  if(w) navigator.clipboard.writeText(location.origin+"?addr="+w);
-  toast("Profile link copied");
-};
-
-$("#openExplorer").onclick=()=>{
-  const w=addrInput.value.trim();
-  if(w) window.open(`https://testnet.arcscan.app/address/${w}`,"_blank");
-};
-
-async function loadLeaderboard(){
-  leaderboard.innerHTML="<div style='opacity:0.6'>Loading...</div>";
-  const r = await fetch("/api/leaderboard");
-  const data = await r.json();
-  const arr = data.top||[];
-
-  if(!arr.length){
-    leaderboard.innerHTML="<div style='opacity:0.6'>No data.</div>";
-    return;
-  }
-
-  leaderboard.innerHTML="";
-  arr.forEach((w,i)=>{
-    const row=document.createElement("div");
-    row.className="lb-row";
-    row.innerHTML=`
-      <div style="display:flex;gap:10px;align-items:center">
-        <div class="lb-rank">${i+1}</div>
+  <div class="wrap">
+    <!-- PAINEL ESQUERDO: atividade -->
+    <div class="panel main-panel">
+      <div class="header-row">
         <div>
-          <div class="lb-addr">${w.address}</div>
-          <div style="font-size:12px;opacity:0.7">txs: ${w.count}</div>
+          <div class="term-title">ARC ACTIVITY TRACKER</div>
+          <div class="term-sub">Community scanner — shows live activity on Arc Testnet</div>
         </div>
       </div>
-      <button class="view-btn" onclick="location.href='/?addr=${w.address}'">View</button>
-    `;
-    leaderboard.appendChild(row);
-  });
-}
 
-loadLeaderboard();
-</script>
+      <div class="input-row">
+        <input id="addr" class="address" placeholder="Paste Arc Testnet wallet (0x...)" />
+        <button id="check" class="action">Run Scan</button>
+      </div>
+
+      <div class="small-note">
+        Uses ArcScan API via server backend. No wallet signatures required.
+      </div>
+
+      <div id="summary" class="summary" style="display:none">
+        <div class="stat">
+          <div class="label">Total</div>
+          <div id="tcount" class="num">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">First Tx</div>
+          <div id="first" class="num">--</div>
+        </div>
+        <div class="stat">
+          <div class="label">Last Tx</div>
+          <div id="last" class="num">--</div>
+        </div>
+        <div class="stat">
+          <div class="label">Status</div>
+          <div id="status" class="num">--</div>
+        </div>
+      </div>
+
+      <div id="terminal" class="terminal" role="log" aria-live="polite">
+        <div class="placeholder">Run a scan to show the latest transactions (Arc Testnet).</div>
+      </div>
+    </div>
+
+    <!-- PAINEL DIREITO: snapshot + leaderboard -->
+    <div class="panel snapshot-panel">
+      <div class="side-title">Wallet Snapshot</div>
+
+      <div class="snapshot">
+        <div class="row">
+          <div>Wallet</div>
+          <div id="snapWallet" class="snap-wallet">--</div>
+        </div>
+        <div class="row">
+          <div>Network</div>
+          <div>Arc Testnet</div>
+        </div>
+        <div class="row">
+          <div>Tx Count</div>
+          <div id="snapTx">0</div>
+        </div>
+        <div class="row">
+          <div>Active</div>
+          <div id="snapActive"><span class="badge-out">No</span></div>
+        </div>
+
+        <div class="quick-label">Quick actions</div>
+        <div class="copy-row">
+          <button id="copyLink" class="btn-main">Copy Profile Link</button>
+          <button id="openExplorer" class="btn-outline">Open in ArcScan</button>
+        </div>
+      </div>
+
+      <div class="leaderboard-header">
+        <div class="lb-title">Top Active Wallets</div>
+        <button id="refreshLB" class="btn-ghost small-btn">Refresh</button>
+      </div>
+
+      <div class="lb-filter-row">
+        <span>Show</span>
+        <select id="lbLimit" class="lb-select">
+          <option value="10">Top 10</option>
+          <option value="25">Top 25</option>
+          <option value="50" selected>Top 50</option>
+        </select>
+      </div>
+
+      <div id="leaderboard" class="leaderboard">
+        <div class="placeholder">No data.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="wallet.js"></script>
 </body>
 </html>
