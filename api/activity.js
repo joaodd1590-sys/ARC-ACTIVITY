@@ -1,47 +1,33 @@
 export default async function handler(req, res) {
   try {
     const { address } = req.query;
+    if (!address || !address.startsWith("0x"))
+      return res.status(400).json({ error: "Invalid address" });
 
-    if (!address) {
-      return res.status(400).json({ error: "Missing wallet address" });
-    }
+    const url = `https://testnet.arcscan.app/api?module=account&action=txlist&address=${address}`;
+    const r = await fetch(url);
+    const data = await r.json();
 
-    // Endpoint da API do ArcScan (estilo Etherscan)
-    const apiUrl = `https://testnet.arcscan.app/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc`;
+    if (!data || !data.result)
+      return res.status(200).json({ transactions: [] });
 
-    const response = await fetch(apiUrl);
-    const data = await response.json();
-
-    if (!data || data.status !== "1") {
-      return res.status(200).json({
-        address,
-        network: "Arc Testnet",
-        transactions: [],
-        message: "No transactions found yet"
-      });
-    }
-
-    // Normalizando as transações
-    const txs = data.result.map((tx) => ({
+    const txs = data.result.map(tx => ({
       hash: tx.hash,
       from: tx.from,
       to: tx.to,
-      value: tx.value,
-      time: new Date(tx.timeStamp * 1000).toLocaleString("pt-BR"),
+      value: (Number(tx.value) / 1e18).toFixed(4),
+      time: new Date(tx.timeStamp * 1000).toLocaleString(),
       link: `https://testnet.arcscan.app/tx/${tx.hash}`
-    }));
+    })).sort((a, b) => (a.timeStamp < b.timeStamp ? 1 : -1));
 
-    return res.status(200).json({
+    res.status(200).json({
       address,
-      network: "Arc Testnet",
-      totalTx: txs.length,
+      total: txs.length,
       transactions: txs
     });
 
   } catch (err) {
-    return res.status(500).json({
-      error: "ArcScan API error",
-      details: err.message
-    });
+    console.error("ACTIVITY ERROR:", err);
+    res.status(500).json({ error: "server error" });
   }
 }
