@@ -15,36 +15,32 @@ export default async function handler(req, res) {
     }
 
     const txs = json.result.map(tx => {
-      // ----------------------------
-      // VALUE enviado
-      // ----------------------------
+      // VALUE (BigInt)
       let rawValue = tx.value || "0";
-      if (rawValue.startsWith("0x")) rawValue = parseInt(rawValue, 16);
-      const valueArc = Number(rawValue) / 1e18;
+      if (rawValue.startsWith("0x")) {
+        rawValue = BigInt(rawValue).toString();
+      }
+      const valueWei = BigInt(rawValue);
+      const valueArc = Number(valueWei) / 1e18; // safe now
 
-      // ----------------------------
-      // GAS gasto
-      // ----------------------------
-      const gasUsed = Number(tx.gasUsed || 0);
-      const gasPrice = Number(tx.gasPrice || 0);
-      const gasSpentWei = gasUsed * gasPrice;
-      const gasSpentArc = gasSpentWei / 1e18;
+      // GAS (BigInt)
+      const gasUsed = BigInt(tx.gasUsed || "0");
+      const gasPrice = BigInt(tx.gasPrice || "0");
+      const gasWei = gasUsed * gasPrice;
+      const gasArc = Number(gasWei) / 1e18;
 
-      // ----------------------------
-      // TOTAL gasto
-      // ----------------------------
-      const totalCost = valueArc + gasSpentArc;
+      // TOTAL
+      const totalArc = valueArc + gasArc;
 
       return {
         hash: tx.hash,
         from: tx.from,
         to: tx.to,
         value: valueArc.toFixed(6) + " ARC",
-        gas: gasSpentArc.toFixed(6) + " ARC",
-        total: totalCost.toFixed(6) + " ARC",
+        gas: gasArc.toFixed(6) + " ARC",
+        total: totalArc.toFixed(6) + " ARC",
         time: new Date(Number(tx.timeStamp) * 1000).toLocaleString(),
-        link: `https://testnet.arcscan.app/tx/${tx.hash}`,
-        timeStamp: Number(tx.timeStamp)
+        link: `https://testnet.arcscan.app/tx/${tx.hash}`
       };
     });
 
