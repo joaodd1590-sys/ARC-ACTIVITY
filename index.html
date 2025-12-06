@@ -1,167 +1,110 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Arc Activity — Testnet Explorer</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-
+  <meta charset="utf-8" />
+  <title>Arc Activity — Cyberpunk</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
+    :root{
+      --bg:#070712; --panel:#0c0f16; --neon1:#6cf2c2; --neon2:#ff4db8; --muted:#9aa4b2;
     }
-
-    body {
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #0b0014, #000);
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .container {
-      width: 90%;
-      max-width: 1100px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-    }
-
-    .card {
-      background: rgba(255,255,255,0.05);
-      border-radius: 20px;
-      padding: 30px;
-      border: 1px solid rgba(255,255,255,0.15);
-      box-shadow: 0 0 30px rgba(0,255,255,0.1);
-    }
-
-    h1 {
-      font-size: 32px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      opacity: 0.8;
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-
-    input {
-      width: 100%;
-      padding: 15px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      margin-bottom: 15px;
-      font-size: 16px;
-    }
-
-    button {
-      width: 100%;
-      padding: 15px;
-      border-radius: 10px;
-      border: none;
-      background: linear-gradient(90deg, #00ffff, #7f00ff);
-      color: black;
-      font-weight: bold;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      opacity: 0.8;
-    }
-
-    .result {
-      margin-top: 20px;
-      font-size: 16px;
-      line-height: 1.6;
-    }
-
-    .footer {
-      margin-top: 20px;
-      font-size: 13px;
-      opacity: 0.5;
-    }
-
-    @media (max-width: 900px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial;background:linear-gradient(180deg,#04030a,#07030d);color:#e6eef6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px}
+    .wrap{width:100%;max-width:1200px;display:grid;grid-template-columns:1fr 460px;gap:28px}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:26px;border:1px solid rgba(108,242,194,0.04);box-shadow:0 20px 60px rgba(3,6,15,0.7)}
+    h1{font-family:Orbitron,monospace;color:var(--neon1);margin:0 0 6px 0;font-size:28px}
+    p.lead{color:var(--muted);margin:0 0 18px 0}
+    input{width:100%;padding:14px 16px;border-radius:10px;border:none;font-family:monospace;font-size:14px}
+    .btn{width:100%;padding:14px;border-radius:10px;border:none;margin-top:12px;background:linear-gradient(90deg,var(--neon1),#7f00ff);color:#031217;font-weight:700;cursor:pointer;font-size:16px}
+    .btn:active{transform:translateY(1px)}
+    .info{margin-top:14px;color:var(--muted);font-size:13px}
+    .result{margin-top:18px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;font-size:15px}
+    .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.02)}
+    .row:last-child{border-bottom:none}
+    .value{font-family:monospace}
+    .status{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:700}
+    .active{background:linear-gradient(90deg,var(--neon1),#2ef2b0);color:#041017}
+    .inactive{background:#222;color:#bbb;border:1px solid rgba(255,255,255,0.02)}
+    @media (max-width:980px){.wrap{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
-
-  <div class="container">
-
-    <!-- CARD PRINCIPAL -->
-    <div class="card">
+  <div class="wrap">
+    <div class="panel">
       <h1>Arc Activity</h1>
-      <p>Community tool to track wallet balance on Arc Testnet.</p>
+      <p class="lead">Community tool to track wallet activity on Arc Testnet (reads via backend)</p>
 
-      <input id="wallet" placeholder="Paste your wallet address">
+      <input id="wallet" placeholder="Paste Arc wallet address (0x...)" />
+      <button id="btn" class="btn">Check Activity</button>
 
-      <button onclick="check()">Check Activity</button>
+      <div id="message" class="info"></div>
 
-      <div id="output" class="result"></div>
+      <div id="result" class="result" style="display:none"></div>
 
-      <div class="footer">
-        RPC: https://rpc.testnet.arc.network<br>
-        Not affiliated with Arc.
+      <div class="info" style="margin-top:14px;font-size:13px">
+        RPC is queried from the server to avoid CORS / rate-limit problems.
       </div>
     </div>
 
-    <!-- CARD DE STATUS -->
-    <div class="card">
-      <h1>Wallet Snapshot</h1>
-      <div id="snapshot" class="result">
-        Waiting for wallet input...
-      </div>
+    <div class="panel">
+      <h1 style="color:#ff4db8">Wallet Snapshot</h1>
+      <div id="snapshot" class="result">Waiting for wallet input...</div>
     </div>
-
   </div>
 
-  <script>
-    const provider = new ethers.providers.JsonRpcProvider(
-      "https://rpc.testnet.arc.network"
-    );
+<script>
+  async function check() {
+    const wallet = document.getElementById('wallet').value.trim();
+    const message = document.getElementById('message');
+    const result = document.getElementById('result');
+    const snap = document.getElementById('snapshot');
 
-    async function check() {
-      const wallet = document.getElementById("wallet").value;
-      const output = document.getElementById("output");
-      const snapshot = document.getElementById("snapshot");
+    if (!wallet || wallet.length < 40) {
+      message.textContent = "⚠️ Paste a valid wallet address (0x...)";
+      return;
+    }
+    message.textContent = "⏳ Querying server...";
+    result.style.display = 'block';
+    result.innerHTML = "Loading...";
 
-      if (!wallet || wallet.length < 40) {
-        output.innerHTML = "⚠️ Invalid wallet address.";
+    try {
+      const url = `/api/wallet?address=${encodeURIComponent(wallet)}`;
+      const resp = await fetch(url);
+      if (!resp.ok) {
+        const txt = await resp.text();
+        message.textContent = "❌ Server error: " + resp.status;
+        result.innerHTML = "Unable to fetch.";
+        snap.innerHTML = "Unable to fetch data.";
         return;
       }
+      const data = await resp.json();
+      message.textContent = data.isActive ? "✅ Wallet has activity" : "⚠️ No activity detected";
+      result.innerHTML = `
+        <div class="row"><div>Wallet</div><div class="value">${data.wallet}</div></div>
+        <div class="row"><div>Balance</div><div class="value">${data.balance} ARC</div></div>
+        <div class="row"><div>Outgoing txCount (nonce)</div><div class="value">${data.txCountOutgoing}</div></div>
+        <div class="row"><div>Seen (last ${data.scannedBlocks} blocks)</div><div class="value">${data.seenInLookback}</div></div>
+        <div class="row"><div>Contracts interacted</div><div class="value">${data.contractsCount}</div></div>
+        <div class="row"><div>First Interaction</div><div class="value">${data.firstInteraction || '—'}</div></div>
+        <div class="row"><div>Last Interaction</div><div class="value">${data.lastInteraction || '—'}</div></div>
+      `;
 
-      output.innerHTML = "⏳ Loading...";
-      snapshot.innerHTML = "Checking balance...";
-
-      try {
-        const balance = await provider.getBalance(wallet);
-        const eth = ethers.utils.formatEther(balance);
-
-        output.innerHTML = `
-          ✅ Wallet connected<br>
-          Balance: ${eth} ARC
-        `;
-
-        snapshot.innerHTML = `
-          Wallet: ${wallet}<br>
-          Balance: ${eth} ARC
-        `;
-      } catch (e) {
-        output.innerHTML = "❌ Error connecting to Arc RPC.";
-        snapshot.innerHTML = "Unable to fetch data.";
-      }
+      snap.innerHTML = `
+        <div class="row"><div>Wallet</div><div class="value">${data.wallet}</div></div>
+        <div class="row"><div>Balance</div><div class="value">${data.balance} ARC</div></div>
+        <div class="row"><div>Active</div><div class="value">${data.isActive ? '<span class="status active">Active</span>' : '<span class="status inactive">No Activity</span>'}</div></div>
+      `;
+    } catch (err) {
+      console.error('fetch error', err);
+      message.textContent = "❌ Network or server error";
+      result.innerHTML = "Error fetching data.";
+      snap.innerHTML = "Unable to fetch data.";
     }
-  </script>
+  }
 
+  document.getElementById('btn').addEventListener('click', check);
+  document.getElementById('wallet').addEventListener('keydown', (e) => { if (e.key === 'Enter') check(); });
+</script>
 </body>
 </html>
