@@ -42,14 +42,8 @@ function appendTx(tx, wallet) {
   else if (toLower === wLower) direction = "IN";
 
   const badge =
-    direction === "IN"
-      ? `<span class="badge-in">IN</span>`
-      : direction === "OUT"
-      ? `<span class="badge-out">OUT</span>`
-      : "";
-
-  const fromText = tx.from || "--";
-  const toText   = tx.to   || "--";
+    direction === "IN"  ? `<span class="badge-in">IN</span>` :
+    direction === "OUT" ? `<span class="badge-out">OUT</span>` : "";
 
   const totalText = tx.total || tx.value || "0 USDC";
 
@@ -57,7 +51,7 @@ function appendTx(tx, wallet) {
     <div class="left">
       <div class="hash">${tx.hash}</div>
       <div class="meta">
-        ${fromText} → ${toText}
+        ${tx.from} → ${tx.to}
         • Total: ${totalText}
         • ${tx.time}
       </div>
@@ -90,63 +84,48 @@ async function runScan() {
 
   try {
     const resp = await fetch(`/api/activity?address=${encodeURIComponent(wallet)}`);
-    if (!resp.ok) {
-      terminal.innerHTML = `<div style="padding:10px; color:var(--muted);">Server error ${resp.status}</div>`;
-      return;
-    }
-
     const data = await resp.json();
+
     const txs = data.transactions || [];
     const total = txs.length;
 
-    tcountEl.textContent = total.toString();
-    snapTxEl.textContent = total.toString();
+    tcountEl.textContent = total;
+    snapTxEl.textContent = total;
 
     if (total > 0) {
       const newest = txs[0];
       const oldest = txs[txs.length - 1];
 
-      firstEl.textContent  = oldest.time || "--";
-      lastEl.textContent   = newest.time || "--";
+      firstEl.textContent  = oldest.time;
+      lastEl.textContent   = newest.time;
       statusEl.textContent = "ACTIVE";
       statusEl.style.color = "#00ff9c";
       snapActiveEl.innerHTML = `<span class="badge-in">Yes</span>`;
     } else {
-      firstEl.textContent  = "--";
-      lastEl.textContent   = "--";
+      firstEl.textContent = "--";
+      lastEl.textContent  = "--";
       statusEl.textContent = "NO ACTIVITY";
       statusEl.style.color = "#ff6b6b";
-      snapActiveEl.innerHTML = `<span class="badge-out">No</span>`;
     }
 
     summary.style.display = "flex";
 
     clearTerminal();
-
-    if (!txs.length) {
-      terminal.innerHTML = `<div style="padding:10px; color:var(--muted);">No transactions found.</div>`;
-      return;
-    }
-
     txs.forEach(tx => appendTx(tx, wallet));
 
   } catch (err) {
-    console.error("SCAN ERROR:", err);
     terminal.innerHTML = `<div style="padding:10px; color:var(--muted);">Network error contacting backend.</div>`;
   }
 }
 
-// Botões
 copyLinkBtn?.addEventListener("click", () => {
   const wallet = addrInput.value.trim();
-  if (!wallet) return;
   navigator.clipboard.writeText(`${location.origin}/?addr=${wallet}`);
   alert("Profile link copied");
 });
 
 openExpBtn?.addEventListener("click", () => {
   const wallet = addrInput.value.trim();
-  if (!wallet) return;
   window.open(`https://testnet.arcscan.app/address/${wallet}`, "_blank");
 });
 
@@ -160,10 +139,3 @@ addrInput.addEventListener("keydown", e => { if (e.key === "Enter") runScan(); }
     runScan();
   }
 })();
-
-// CYBERPUNK GLOW
-const glow = document.getElementById("cyberGlow");
-document.addEventListener("mousemove", (e) => {
-  glow.style.left = `${e.clientX}px`;
-  glow.style.top = `${e.clientY}px`;
-});
