@@ -5,43 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARC ACTIVITY</title>
 
-    <!-- Icon -->
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/6317/6317445.png">
+    <link rel="icon" href="/favicon.png">
 
-    <!-- Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Roboto+Mono&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
+    <div class="header">
+        <h1>ARC ACTIVITY</h1>
+        <p>Live scanner – shows Arc Testnet activity</p>
+    </div>
 
-    <!-- TITLE -->
-    <h1 class="title">ARC ACTIVITY</h1>
-    <p class="subtitle">Live scanner for Arc Testnet – Terminal UI Mode</p>
-
-    <!-- ADDRESS INPUT -->
-    <div class="input-section">
+    <div class="main-input">
         <input id="walletInput" placeholder="0x... wallet address">
         <button id="scanBtn">Run Scan</button>
     </div>
 
-    <!-- STATUS -->
-    <div id="statusBox" class="status-box">
-        Awaiting input...
-    </div>
+    <div id="scanStatus" class="status-box">Waiting...</div>
 
-    <!-- RESULTS -->
-    <div id="results" class="results hidden">
+    <div id="content" class="content hidden">
 
-        <!-- WALLET SNAPSHOT -->
-        <div class="card snapshot">
+        <!-- Snapshot -->
+        <div class="card">
             <h2>Wallet Snapshot</h2>
 
-            <p><b>Address:</b> <span id="snapAddress">-</span></p>
-            <p><b>Tx Count:</b> <span id="snapCount">0</span></p>
-            <p><b>Active:</b> <span id="snapActive">No</span></p>
+            <div class="snapshot-line"><b>Wallet:</b> <span id="snapAddress">-</span></div>
+            <div class="snapshot-line"><b>Network:</b> Arc Testnet</div>
+            <div class="snapshot-line"><b>Tx Count:</b> <span id="snapTxCount">0</span></div>
+            <div class="snapshot-line"><b>Active:</b> <span id="snapActive">No</span></div>
 
-            <div class="actions">
+            <div class="snapshot-actions">
                 <button id="copyProfile">Copy Profile Link</button>
                 <button id="openArcScan">Open in ArcScan</button>
             </div>
@@ -50,22 +45,20 @@
         <!-- TRANSACTION LIST -->
         <div class="card">
             <h2>Transaction Activity</h2>
-            <div id="txList">Loading...</div>
+            <div id="txList">No transactions yet.</div>
         </div>
 
         <!-- LEADERBOARD -->
         <div class="card">
             <h2>Top Active Wallets</h2>
-            <button id="refreshLB" class="small-btn">Refresh</button>
-            <div id="leaderboard">Loading...</div>
+            <button id="refreshLB" class="refresh-btn">Refresh</button>
+            <div id="leaderboard">Loading…</div>
         </div>
 
     </div>
-</div>
 
-<!-- Scripts -->
-<script src="wallet.js"></script>
-<script src="leaderboard.js"></script>
+    <script src="wallet.js"></script>
+    <script src="leaderboard.js"></script>
 
 </body>
 </html>
