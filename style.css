@@ -1,6 +1,4 @@
-/* ===========================================
-   GLOBAL THEME
-=========================================== */
+/* GLOBAL */
 :root {
   --bg: #02020a;
   --neon-cyan: #6cf2c2;
@@ -9,54 +7,45 @@
   --accent: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
 }
 
-* {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
-  background: #02020a; /* Fundo sólido sem gradiente */
+  background: #02020a;
   font-family: Inconsolata, monospace;
   color: #e6eef6;
   overflow-x: hidden;
 }
 
-/* ===========================================
-   CYBERPUNK GLOW FOLLOW MOUSE
-=========================================== */
+/* CYBERPUNK GLOW */
 #cyberGlow {
   position: fixed;
+  width: 140px;
+  height: 140px;
   top: 0;
   left: 0;
-  width: 260px;
-  height: 260px;
   pointer-events: none;
 
   background: radial-gradient(circle,
-    rgba(108, 242, 194, 0.28) 0%,
-    rgba(255, 77, 184, 0.25) 35%,
-    rgba(0,0,0,0) 70%
+    rgba(108, 242, 194, 0.20) 0%,
+    rgba(255, 77, 184, 0.18) 40%,
+    rgba(0,0,0,0) 75%
   );
 
   border-radius: 50%;
   mix-blend-mode: screen;
-  filter: blur(40px);
-  opacity: 0.8;
-
-  transform: translate(-130px, -130px);
-  transition: opacity 0.25s ease-out;
+  filter: blur(30px);
+  opacity: 0.55;
+  transform: translate(-70px, -70px);
+  transition: opacity 0.18s ease-out;
   z-index: 0;
 }
 
-/* Faz o glow sumir quando mouse está sobre qualquer painel */
+/* Glow some quando mouse sobre painel */
 .panel:hover ~ #cyberGlow,
 .panel:hover + #cyberGlow {
   opacity: 0;
 }
 
-/* ===========================================
-   MAIN GRID WRAPPER
-=========================================== */
+/* GRID LAYOUT */
 .wrap {
   max-width: 1200px;
   margin: 28px auto;
@@ -68,9 +57,6 @@ body {
   z-index: 2;
 }
 
-/* ===========================================
-   PANELS
-=========================================== */
 .panel {
   background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
@@ -80,23 +66,14 @@ body {
   z-index: 3;
 }
 
-/* ===========================================
-   TITLES
-=========================================== */
+/* TITLES */
 .term-title {
   font-family: Orbitron;
   color: var(--neon-cyan);
   font-size: 22px;
 }
 
-.term-sub {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-/* ===========================================
-   INPUT + BUTTON
-=========================================== */
+/* INPUT */
 .input-row {
   display: flex;
   gap: 10px;
@@ -124,38 +101,7 @@ button.action {
   font-size: 15px;
 }
 
-/* ===========================================
-   SUMMARY BOXES
-=========================================== */
-.summary {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-
-.stat {
-  background: rgba(255, 255, 255, 0.02);
-  padding: 12px;
-  border-radius: 8px;
-  min-width: 150px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.stat .label {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.stat .num {
-  color: var(--neon-cyan);
-  font-weight: 700;
-  margin-top: 6px;
-}
-
-/* ===========================================
-   TERMINAL
-=========================================== */
+/* TERMINAL */
 .terminal {
   margin-top: 16px;
   background: rgba(255, 255, 255, 0.02);
@@ -167,9 +113,7 @@ button.action {
   border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-/* ===========================================
-   TRANSACTION ROWS
-=========================================== */
+/* TX ROW */
 .tx {
   padding: 10px 4px;
   border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
@@ -216,61 +160,14 @@ button.action {
   background: linear-gradient(90deg, #ff4db8, #ff9bd1);
 }
 
-/* ===========================================
-   SNAPSHOT
-=========================================== */
-
+/* SNAPSHOT */
 .side-title {
   font-family: Orbitron;
   font-size: 18px;
   color: var(--neon-pink);
 }
 
-.snapshot {
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.snapshot .row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
-}
-
-.snapshot .row:last-child {
-  border-bottom: none;
-}
-
-/* ===========================================
-   LEADERBOARD SECTION
-=========================================== */
-.lb-coming {
-  margin-top: 18px;
-  padding: 16px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.lb-coming-title {
-  font-family: Orbitron;
-  font-size: 17px;
-  color: var(--neon-cyan);
-}
-
-.lb-coming-sub {
-  color: var(--muted);
-  font-size: 13px;
-  margin-top: 6px;
-  line-height: 1.4;
-}
-
-/* ===========================================
-   RESPONSIVE
-=========================================== */
+/* RESPONSIVE */
 @media (max-width: 980px) {
   .wrap {
     grid-template-columns: 1fr;
