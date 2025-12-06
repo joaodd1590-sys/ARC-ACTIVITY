@@ -24,25 +24,22 @@
       box-shadow: 0 20px 60px rgba(2,6,23,0.6);
       min-height:520px;
     }
-
-    /* Terminal header */
     .term-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
     .term-title{font-family:Orbitron,monospace;color:var(--neon-cyan);font-size:22px;letter-spacing:0.6px}
     .term-sub{color:var(--muted);font-size:12px}
 
-    /* input row */
     .input-row{display:flex;gap:10px;margin:14px 0}
     input.address{
-      flex:1;padding:12px 14px;border-radius:8px;border:none;background:rgba(0,0,0,0.35);color:#e6eef6;font-family:monospace;font-size:14px;
-      outline: none; box-shadow: inset 0 -6px 12px rgba(0,0,0,0.4);
+      flex:1;padding:12px 14px;border-radius:8px;border:none;background:rgba(0,0,0,0.35);color:#e6eef6;
+      font-family:Inconsolata;font-size:14px;outline:none;
+      box-shadow: inset 0 -6px 12px rgba(0,0,0,0.5);
     }
     button.action{
-      min-width:150px;padding:12px;border-radius:8px;border:none;background:var(--accent);font-weight:700;cursor:pointer;color:#041017;
-      box-shadow:0 8px 30px rgba(108,242,194,0.06);
+      min-width:150px;padding:12px;border-radius:8px;border:none;background:var(--accent);font-weight:700;
+      cursor:pointer;color:#041017;box-shadow:0 8px 30px rgba(108,242,194,0.06);
     }
     .small{font-size:13px;color:var(--muted);margin-top:8px}
 
-    /* summary */
     .summary{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
     .stat{
       background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
@@ -50,50 +47,50 @@
       color:#dffbf0;font-size:14px;
     }
     .stat .label{color:var(--muted);font-size:12px}
-    .stat .num{font-weight:800;color:var(--neon-cyan);font-family:Inconsolata,monospace;margin-top:6px}
+    .stat .num{font-weight:800;color:var(--neon-cyan);font-family:Inconsolata;margin-top:6px}
 
-    /* terminal box */
     .terminal{
       margin-top:18px;background:linear-gradient(180deg, rgba(0,0,0,0.30), rgba(255,255,255,0.02));
-      border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,0.03);min-height:300px;overflow:auto;
-      font-family:Inconsolata,monospace;color:#cfeef0;font-size:13px;
+      border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,0.03);
+      min-height:300px;overflow:auto;font-family:Inconsolata;color:#cfeef0;font-size:13px;
       box-shadow: inset 0 0 120px rgba(0,0,0,0.25);
     }
-    .tx{padding:10px;border-bottom:1px dashed rgba(255,255,255,0.02);display:flex;justify-content:space-between;gap:8px;align-items:center}
+    .tx{padding:10px;border-bottom:1px dashed rgba(255,255,255,0.02);
+      display:flex;justify-content:space-between;gap:8px;align-items:center}
     .tx:last-child{border-bottom:none}
     .tx .left{flex:1;min-width:0}
-    .tx .hash{color:var(--neon-pink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:460px;display:inline-block}
+    .tx .hash{color:var(--neon-pink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:460px}
     .tx .meta{color:var(--muted);font-size:12px;margin-top:6px}
     .tx .actions{display:flex;gap:8px;align-items:center}
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer;font-size:13px}
-    .badge-in{background:linear-gradient(90deg,#00ffad,#6cf2c2);color:#041017;padding:6px;border-radius:999px;font-weight:700}
-    .badge-out{background:linear-gradient(90deg,#ff4db8,#ff9bd1);color:#041017;padding:6px;border-radius:999px;font-weight:700}
 
-    /* right side */
-    .side-title{font-family:Orbitron,monospace;color:var(--neon-pink);font-size:18px;margin-bottom:8px}
-    .snapshot{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-    .snapshot .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.02)}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);
+      padding:8px 10px;border-radius:8px;color:var(--muted);
+      cursor:pointer;font-size:13px}
+    .badge-in{background:linear-gradient(90deg,#00ffad,#6cf2c2);
+      color:#041017;padding:6px;border-radius:999px;font-weight:700}
+    .badge-out{background:linear-gradient(90deg,#ff4db8,#ff9bd1);
+      color:#041017;padding:6px;border-radius:999px;font-weight:700}
+
+    .side-title{font-family:Orbitron;color:var(--neon-pink);font-size:18px;margin-bottom:8px}
+    .snapshot{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    .snapshot .row{display:flex;justify-content:space-between;padding:8px 0;
+      border-bottom:1px dashed rgba(255,255,255,0.02)}
     .snapshot .row:last-child{border-bottom:none}
     .copy{margin-top:12px;display:flex;gap:8px}
-    .copy button{flex:1;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#041017;font-weight:700;cursor:pointer}
+    .copy button{flex:1;padding:10px;border-radius:8px;border:none;
+      background:var(--accent);color:#041017;font-weight:700;cursor:pointer}
 
-    /* terminal glow */
-    .glow { position:relative; }
-    .glow::after{
-      content:"";position:absolute;inset:-2px;border-radius:10px;
-      background: linear-gradient(90deg, rgba(108,242,194,0.04), rgba(255,77,184,0.04));
-      filter: blur(12px);opacity:0.6;z-index:-1;
-    }
-
-    /* responsive */
     @media (max-width:980px){
       .wrap{grid-template-columns:1fr;padding:18px}
       .terminal{min-height:240px}
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
+
     <div class="panel glow">
       <div class="term-header">
         <div>
@@ -103,37 +100,42 @@
       </div>
 
       <div class="input-row">
-        <input id="addr" class="address" placeholder="Paste Arc wallet (0x...)" value="0x63a131657cdc57865df571e2e61e2eff6ee0c1c8" />
+        <input id="addr" class="address" placeholder="Paste Arc wallet (0x...)" />
         <button id="check" class="action">Run Scan</button>
       </div>
+
       <div class="small">Uses ArcScan API via server backend. No wallet signatures required.</div>
 
-      <div id="summary" class="summary" aria-live="polite" role="status" style="display:none">
+      <div id="summary" class="summary" style="display:none;">
         <div class="stat"><div class="label">Total Transactions</div><div id="tcount" class="num">—</div></div>
         <div class="stat"><div class="label">First Tx</div><div id="first" class="num">—</div></div>
         <div class="stat"><div class="label">Last Tx</div><div id="last" class="num">—</div></div>
         <div class="stat"><div class="label">Status</div><div id="status" class="num">—</div></div>
       </div>
 
-      <div id="terminal" class="terminal" role="log" aria-live="polite">
+      <div id="terminal" class="terminal">
         <div style="opacity:0.6">Run a scan to show the latest transactions (Arc Testnet)</div>
       </div>
     </div>
 
     <div class="panel">
       <div class="side-title">Wallet Snapshot</div>
+
       <div class="snapshot">
-        <div class="row"><div>Wallet</div><div id="snapWallet" class="value">—</div></div>
-        <div class="row"><div>Network</div><div id="snapNet">Arc Testnet</div></div>
+        <div class="row"><div>Wallet</div><div id="snapWallet">—</div></div>
+        <div class="row"><div>Network</div><div>Arc Testnet</div></div>
         <div class="row"><div>Tx Count (last call)</div><div id="snapTx">—</div></div>
         <div class="row"><div>Active</div><div id="snapActive"><span class="badge-out">No</span></div></div>
+
         <div style="margin-top:12px;color:var(--muted);font-size:13px">Quick actions</div>
+
         <div class="copy">
           <button id="copyLink">Copy Profile Link</button>
           <button id="openExplorer" style="background:#111;border:1px solid rgba(255,255,255,0.04);color:var(--neon-pink)">Open in ArcScan</button>
         </div>
       </div>
     </div>
+
   </div>
 
   <script>
@@ -150,10 +152,6 @@
     const openExplorer = document.getElementById('openExplorer');
     const addrInput = document.getElementById('addr');
     const checkBtn = document.getElementById('check');
-
-    function fmtDateStr(dateStr){
-      return dateStr || '—';
-    }
 
     function clearTerminal(){
       terminal.innerHTML = '';
@@ -173,80 +171,93 @@
 
     async function runScan(){
       const wallet = addrInput.value.trim();
-      if(!wallet || !wallet.startsWith('0x') || wallet.length < 40){
-        alert('Paste a valid wallet address (0x...)');
+      if(!wallet.startsWith("0x") || wallet.length < 40){
+        alert("Paste a valid Arc Testnet wallet (0x...)");
         return;
       }
 
       setLoading();
       summary.style.display = 'none';
+
       snapWallet.textContent = wallet;
-      copyLink.onclick = ()=>navigator.clipboard.writeText(`${location.origin}/?addr=${wallet}`);
+      openExplorer.onclick = ()=> window.open(`https://testnet.arcscan.app/address/${wallet}`, "_blank");
+      copyLink.onclick = ()=> navigator.clipboard.writeText(`${location.origin}/?addr=${wallet}`);
 
       try{
         const resp = await fetch(`/api/activity?address=${encodeURIComponent(wallet)}`);
         if(!resp.ok){
-          clearTerminal();
-          terminal.textContent = `Server error: ${resp.status} — try again`;
+          terminal.textContent = `Server error: ${resp.status}`;
           return;
         }
+
         const data = await resp.json();
+        const txs = data.transactions || [];
+        const total = txs.length;
 
         // summary
-        const total = data.totalTx || (data.transactions ? data.transactions.length : 0);
         tcount.textContent = total;
-        const txs = data.transactions || [];
-        summary.style.display = 'flex';
-
-        // derive first & last
         const firstTx = txs.length ? txs[txs.length-1].time : null;
         const lastTx = txs.length ? txs[0].time : null;
+
         first.textContent = firstTx || '—';
         last.textContent = lastTx || '—';
         status.textContent = total > 0 ? 'ACTIVE' : 'NO ACTIVITY';
         status.style.color = total > 0 ? '#00ff9c' : '#ff6b6b';
+        summary.style.display = 'flex';
 
         // snapshot
         snapTx.textContent = total;
         snapActive.innerHTML = total > 0 ? '<span class="badge-in">Yes</span>' : '<span class="badge-out">No</span>';
 
-        // terminal: list tx (newest first)
+        // terminal
         clearTerminal();
+
         if(txs.length === 0){
-          terminal.innerHTML = '<div style="padding:10px;color:var(--muted)">No transactions found on Arc Testnet for this address.</div>';
-        } else {
-          // show first the summary header
-          appendLine(`<div class="left"><div style="font-weight:700;color:var(--neon-pink)">Recent transactions (${total})</div><div class="meta" style="color:var(--muted)">${data.network}</div></div><div class="actions"></div>`);
-          for(const tx of txs){
-            const valueReadable = (Number(tx.value) === 0) ? '0' : (Number(tx.value)/1e18).toLocaleString();
-            const direction = tx.from && tx.from.toLowerCase() === wallet.toLowerCase() ? 'OUT' : 'IN';
-            const badge = direction === 'OUT' ? '<span class="badge-out">OUT</span>' : '<span class="badge-in">IN</span>';
-            const leftHtml = `<div class="left"><div class="hash">${tx.hash}</div><div class="meta">${tx.from} → ${tx.to} · ${valueReadable} · ${tx.time}</div></div>`;
-            const actionsHtml = `<div class="actions"><button class="btn-ghost" onclick="navigator.clipboard.writeText('${tx.hash}')">Copy</button><button class="btn-ghost" onclick="window.open('${tx.link}','_blank')">Explorer</button></div>`;
-            const html = `${leftHtml}<div class="actions">${badge} ${actionsHtml}</div>`;
-            appendLine(html);
-          }
+          terminal.innerHTML = '<div style="padding:12px;color:var(--muted)">No transactions found.</div>';
+          return;
         }
 
-        // set explorer link button
-        openExplorer.onclick = ()=> window.open(`https://testnet.arcscan.app/address/${wallet}`, '_blank');
+        for(const tx of txs){
+          const value = (Number(tx.value) === 0) ? '0' : (Number(tx.value)/1e18).toFixed(4);
+          const direction = tx.from.toLowerCase() === wallet.toLowerCase() ? 'OUT' : 'IN';
+          const badge = direction === 'IN'
+            ? '<span class="badge-in">IN</span>'
+            : '<span class="badge-out">OUT</span>';
+
+          appendLine(`
+            <div class="left">
+              <div class="hash">${tx.hash}</div>
+              <div class="meta">${tx.from} → ${tx.to} • ${value} • ${tx.time}</div>
+            </div>
+            <div class="actions">
+              ${badge}
+              <button class="btn-ghost" onclick="navigator.clipboard.writeText('${tx.hash}')">Copy</button>
+              <button class="btn-ghost" onclick="window.open('${tx.link}', '_blank')">Explorer</button>
+            </div>
+          `);
+        }
 
       }catch(err){
-        console.error(err);
         clearTerminal();
-        terminal.textContent = 'Network error or server problem. Try again.';
+        terminal.textContent = 'Network error. Try again.';
       }
     }
 
-    // hook
-    checkBtn.addEventListener('click', runScan);
-    addrInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') runScan(); });
+    checkBtn.onclick = runScan;
 
-    // If URL has ?addr=... auto-run
+    addrInput.addEventListener("keydown", e=>{
+      if(e.key === "Enter") runScan();
+    });
+
+    // Auto-load only if ?addr=0x...
     (function autoLoad(){
       const params = new URLSearchParams(location.search);
       const a = params.get('addr');
-      if(a){ addrInput.value = a; runScan(); }
+
+      if(a && a.startsWith("0x") && a.length > 40){
+        addrInput.value = a;
+        runScan();
+      }
     })();
   </script>
 </body>
