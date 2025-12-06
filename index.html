@@ -1,362 +1,71 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ARC ACTIVITY</title>
-  <link rel="icon" type="image/png" href="https://i.imgur.com/0ZK0l9g.png"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARC ACTIVITY</title>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Icon -->
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/6317/6317445.png">
 
-  <style>
-    :root{
-      --bg:#05030a; --neon-cyan:#6cf2c2; --neon-pink:#ff4db8; --muted:#8f98a6; --accent: linear-gradient(90deg,var(--neon-cyan),var(--neon-pink));
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:linear-gradient(180deg,#02020a,var(--bg));font-family:Inconsolata,monospace;color:#e6eef6}
-    .wrap{max-width:1200px;margin:28px auto;padding:22px;display:grid;grid-template-columns:1fr 420px;gap:22px}
-    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:18px;border:1px solid rgba(108,242,194,0.04)}
-    .snapshot-panel{height:fit-content;align-self:flex-start}
-
-    .term-title{font-family:Orbitron;color:var(--neon-cyan);font-size:22px}
-    .term-sub{color:var(--muted);font-size:12px}
-    .input-row{display:flex;gap:10px;margin:12px 0}
-    input.address{flex:1;padding:12px;border-radius:8px;border:none;background:rgba(0,0,0,0.35);color:#e6eef6}
-    button.action{min-width:140px;padding:10px;border-radius:8px;border:none;background:var(--accent);cursor:pointer;color:#041017;font-weight:700}
-    .small{font-size:13px;color:var(--muted);margin-top:6px}
-
-    .summary{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
-    .stat{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;min-width:120px;border:1px solid rgba(255,255,255,0.03)}
-    .stat .label{color:var(--muted);font-size:12px}
-    .stat .num{color:var(--neon-cyan);font-weight:700;margin-top:6px}
-
-    .chart-wrap{display:flex;align-items:center;gap:18px;margin-top:14px}
-    .chart-box{width:260px;height:200px;background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
-    .chart-controls{display:flex;gap:8px;align-items:center}
-
-    .terminal{margin-top:14px;background:rgba(255,255,255,0.02);border-radius:10px;padding:12px;min-height:220px;max-height:420px;overflow:auto;border:1px solid rgba(255,255,255,0.03)}
-    .tx{padding:8px;border-bottom:1px dashed rgba(255,255,255,0.02);display:flex;justify-content:space-between;gap:8px;align-items:center}
-    .tx .left{flex:1;min-width:0}
-    .hash{color:var(--neon-pink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:500px}
-    .meta{color:var(--muted);font-size:12px;margin-top:6px}
-    .actions{display:flex;gap:8px;align-items:center}
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
-    .badge-in{background:linear-gradient(90deg,#00ffad,#6cf2c2);color:#041017;padding:6px 8px;border-radius:18px;font-weight:700}
-    .badge-out{background:linear-gradient(90deg,#ff4db8,#ff9bd1);color:#041017;padding:6px 8px;border-radius:18px;font-weight:700}
-
-    .side-title{font-family:Orbitron;color:var(--neon-pink);font-size:18px;margin-bottom:8px}
-    .snapshot{padding:12px;background:rgba(255,255,255,0.01);border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
-    .snapshot .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
-    .snapshot .row:last-child{border-bottom:none}
-    .copy{margin-top:12px;display:flex;gap:8px}
-    .copy button{flex:1;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#041017;font-weight:700;cursor:pointer}
-
-    /* leaderboard */
-    .leaderboard{margin-top:14px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;max-height:320px;overflow:auto}
-    .lb-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px dashed rgba(255,255,255,0.03)}
-    .lb-row:last-child{border-bottom:none}
-    .lb-rank{font-weight:800;color:var(--neon-cyan);width:36px}
-    .lb-addr{font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
-    .view-btn{padding:6px 8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--neon-pink);cursor:pointer}
-
-    /* toast */
-    .copy-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--accent);padding:10px 18px;border-radius:10px;font-weight:700;color:#041017;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:999}
-    .copy-toast.show{opacity:1;transform:translateX(-50%) translateY(-10px)}
-
-    @media (max-width:980px){ .wrap{grid-template-columns:1fr;padding:16px} .chart-wrap{flex-direction:column;align-items:flex-start} }
-  </style>
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="copyToast" class="copy-toast">Copied!</div>
 
-  <div class="wrap">
-    <!-- LEFT -->
-    <div class="panel">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div class="term-title">ARC ACTIVITY TRACKER</div>
-          <div class="term-sub">Community scanner — shows live activity on Arc Testnet</div>
-        </div>
-      </div>
+<div class="container">
 
-      <div class="input-row">
-        <input id="addr" class="address" placeholder="Paste Arc wallet (0x...)" />
-        <button id="check" class="action">Run Scan</button>
-      </div>
+    <!-- TITLE -->
+    <h1 class="title">ARC ACTIVITY</h1>
+    <p class="subtitle">Live scanner for Arc Testnet – Terminal UI Mode</p>
 
-      <div class="small">Uses ArcScan API via server backend. No wallet signatures required.</div>
-
-      <div id="summary" class="summary" style="display:none">
-        <div class="stat"><div class="label">Total Transactions</div><div id="tcount" class="num">—</div></div>
-        <div class="stat"><div class="label">First Tx</div><div id="first" class="num">—</div></div>
-        <div class="stat"><div class="label">Last Tx</div><div id="last" class="num">—</div></div>
-        <div class="stat"><div class="label">Status</div><div id="status" class="num">—</div></div>
-      </div>
-
-      <div class="chart-wrap">
-        <div class="chart-box">
-          <canvas id="txChart" width="260" height="200"></canvas>
-        </div>
-        <div>
-          <div class="chart-controls">
-            <label style="color:var(--muted);margin-right:6px">Chart:</label>
-            <button id="toggleChart" class="btn-ghost">Donut</button>
-            <label style="margin-left:12px;color:var(--muted)">Filter:</label>
-            <select id="chartFilter" style="background:transparent;border-radius:6px;padding:6px;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">
-              <option value="both">Both</option>
-              <option value="in">IN</option>
-              <option value="out">OUT</option>
-            </select>
-          </div>
-          <div style="color:var(--muted);font-size:13px;margin-top:8px">IN = received · OUT = sent</div>
-        </div>
-      </div>
-
-      <div id="terminal" class="terminal" role="log" aria-live="polite">
-        <div style="opacity:.6">Run a scan to show the latest transactions (Arc Testnet)</div>
-      </div>
+    <!-- ADDRESS INPUT -->
+    <div class="input-section">
+        <input id="walletInput" placeholder="0x... wallet address">
+        <button id="scanBtn">Run Scan</button>
     </div>
 
-    <!-- RIGHT -->
-    <div class="panel snapshot-panel">
-      <div class="side-title">Wallet Snapshot</div>
-
-      <div class="snapshot">
-        <div class="row"><div>Wallet</div><div id="snapWallet">—</div></div>
-        <div class="row"><div>Network</div><div>Arc Testnet</div></div>
-        <div class="row"><div>Tx Count</div><div id="snapTx">—</div></div>
-        <div class="row"><div>Active</div><div id="snapActive"><span class="badge-out">No</span></div></div>
-
-        <div style="margin-top:12px;color:var(--muted);font-size:13px">Quick actions</div>
-        <div class="copy">
-          <button id="copyLink">Copy Profile Link</button>
-          <button id="openExplorer" style="background:#111;border:1px solid rgba(255,255,255,0.04);color:var(--neon-pink)">Open in ArcScan</button>
-        </div>
-      </div>
-
-      <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center">
-        <div style="font-weight:700;color:var(--neon-cyan)">Top Active Wallets</div>
-        <button id="refreshLB" class="btn-ghost">Refresh</button>
-      </div>
-
-      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-        <label style="color:var(--muted)">Show</label>
-        <select id="lbLimit" style="background:transparent;border-radius:6px;padding:6px;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">
-          <option value="10">Top 10</option>
-          <option value="25">Top 25</option>
-          <option value="50" selected>Top 50</option>
-        </select>
-      </div>
-
-      <div id="leaderboard" class="leaderboard"></div>
+    <!-- STATUS -->
+    <div id="statusBox" class="status-box">
+        Awaiting input...
     </div>
 
-  </div>
+    <!-- RESULTS -->
+    <div id="results" class="results hidden">
 
-<script>
-  // helpers
-  const $ = sel => document.querySelector(sel);
-  const terminal = $("#terminal");
-  const addrInput = $("#addr");
-  const checkBtn = $("#check");
-  const summary = $("#summary");
-  const tcount = $("#tcount");
-  const first = $("#first");
-  const last = $("#last");
-  const status = $("#status");
-  const snapWallet = $("#snapWallet");
-  const snapTx = $("#snapTx");
-  const snapActive = $("#snapActive");
-  const copyLink = $("#copyLink");
-  const openExplorer = $("#openExplorer");
-  const txChartEl = document.getElementById("txChart");
-  const toggleChartBtn = $("#toggleChart");
-  const chartFilter = $("#chartFilter");
-  const leaderboardEl = $("#leaderboard");
-  const refreshLB = $("#refreshLB");
-  const lbLimit = $("#lbLimit");
-  const copyToast = $("#copyToast");
+        <!-- WALLET SNAPSHOT -->
+        <div class="card snapshot">
+            <h2>Wallet Snapshot</h2>
 
-  function showToast(text="Copied!") {
-    copyToast.textContent = text;
-    copyToast.classList.add("show");
-    setTimeout(()=> copyToast.classList.remove("show"),1400);
-  }
+            <p><b>Address:</b> <span id="snapAddress">-</span></p>
+            <p><b>Tx Count:</b> <span id="snapCount">0</span></p>
+            <p><b>Active:</b> <span id="snapActive">No</span></p>
 
-  function clearTerminal(){ terminal.innerHTML = ""; }
-  function appendLine(html){ const d=document.createElement("div"); d.className="tx"; d.innerHTML=html; terminal.prepend(d); }
-
-  // Chart setup
-  let chartType = "doughnut";
-  let txChart = new Chart(txChartEl.getContext("2d"), {
-    type: chartType,
-    data: { labels:["IN","OUT"], datasets:[{data:[0,0], backgroundColor:["#6cf2c2","#ff4db8"]}] },
-    options: { responsive:true, plugins:{legend:{position:"bottom"}}}
-  });
-
-  function updateChart(inCount, outCount) {
-    const filter = chartFilter.value;
-    let a = inCount, b = outCount;
-    if (filter === "in") b = 0;
-    if (filter === "out") a = 0;
-    txChart.data.datasets[0].data = [a, b];
-    txChart.update();
-    toggleChartBtn.textContent = chartType === "doughnut" ? "Donut" : "Bar";
-  }
-
-  toggleChartBtn.onclick = () => {
-    const ctx = txChartEl.getContext("2d");
-    chartType = chartType === "doughnut" ? "bar" : "doughnut";
-    txChart.destroy();
-    txChart = new Chart(ctx, {
-      type: chartType,
-      data: { labels:["IN","OUT"], datasets:[{data:[0,0], backgroundColor:["#6cf2c2","#ff4db8"]}] },
-      options: { responsive:true, plugins:{legend:{position:"bottom"}} }
-    });
-    updateChart(currentInCount, currentOutCount);
-  };
-
-  chartFilter.onchange = () => updateChart(currentInCount, currentOutCount);
-
-  // globals for chart
-  let currentInCount = 0;
-  let currentOutCount = 0;
-
-  // runScan -> calls /api/activity?address=
-  async function runScan() {
-    const wallet = addrInput.value.trim();
-    if(!wallet.startsWith("0x") || wallet.length < 40){ alert("Paste a valid Arc Testnet wallet (0x...)"); return; }
-
-    clearTerminal();
-    terminal.innerHTML = `<div style="padding:12px;color:var(--muted)">Scanning...</div>`;
-    summary.style.display = "none";
-    snapWallet.textContent = wallet;
-
-    try {
-      const resp = await fetch(`/api/activity?address=${encodeURIComponent(wallet)}`);
-      if(!resp.ok){ terminal.innerHTML = `<div style="padding:12px;color:var(--muted)">Server error ${resp.status}</div>`; return; }
-      const data = await resp.json();
-      const txs = data.transactions || [];
-      const total = txs.length;
-
-      // counts IN / OUT
-      currentInCount = txs.filter(tx => tx.to && tx.to.toLowerCase() === wallet.toLowerCase()).length;
-      currentOutCount = txs.filter(tx => tx.from && tx.from.toLowerCase() === wallet.toLowerCase()).length;
-      updateChart(currentInCount, currentOutCount);
-
-      tcount.textContent = total;
-      snapTx.textContent = total;
-      first.textContent = txs.length ? txs[txs.length-1].time : "—";
-      last.textContent = txs.length ? txs[0].time : "—";
-
-      if(total>0){
-        status.textContent = "ACTIVE"; status.style.color="#00ff9c"; snapActive.innerHTML='<span class="badge-in">Yes</span>';
-      } else {
-        status.textContent = "NO ACTIVITY"; status.style.color="#ff6b6b"; snapActive.innerHTML='<span class="badge-out">No</span>';
-      }
-      summary.style.display = "flex";
-
-      // render transactions (newest first)
-      clearTerminal();
-      if(!txs.length){ terminal.innerHTML = `<div style="padding:10px;color:var(--muted)">No transactions found.</div>`; return; }
-      for(const tx of txs){
-        const value = Number(tx.value)/1e18 || 0;
-        const direction = tx.from.toLowerCase() === wallet.toLowerCase() ? "OUT" : "IN";
-        const badge = direction==="IN" ? `<span class="badge-in">IN</span>` : `<span class="badge-out">OUT</span>`;
-        const html = `
-          <div class="left">
-            <div class="hash">${tx.hash}</div>
-            <div class="meta">${tx.from} → ${tx.to} • ${value.toFixed(4)} • ${tx.time}</div>
-          </div>
-          <div class="actions">
-            ${badge}
-            <button class="btn-ghost" onclick="navigator.clipboard.writeText('${tx.hash}').then(()=>showCopy())">Copy</button>
-            <button class="btn-ghost" onclick="window.open('${tx.link}','_blank')">Explorer</button>
-          </div>
-        `;
-        appendLine(html);
-      }
-    } catch(err){
-      console.error(err);
-      terminal.innerHTML = `<div style="padding:10px;color:var(--muted)">Network error.</div>`;
-    }
-  }
-
-  // small wrapper to show copy toast
-  function showCopy(){ showToast("Copied!"); }
-
-  // Leaderboard fetch + render
-  async function fetchLeaderboard(limit=50) {
-    leaderboardEl.innerHTML = `<div style="padding:8px;color:var(--muted)">Loading leaderboard (scanning recent blocks)...</div>`;
-    try {
-      const resp = await fetch(`/api/leaderboard`);
-      if(!resp.ok){ leaderboardEl.innerHTML = `<div style="padding:8px;color:var(--muted)">Leaderboard error ${resp.status}</div>`; return; }
-      const data = await resp.json();
-      const top = (data.top || []).slice(0, Number(limit));
-      if(!top.length){ leaderboardEl.innerHTML = `<div style="padding:8px;color:var(--muted)">No leaderboard data yet.</div>`; return; }
-
-      const frag = document.createDocumentFragment();
-      top.forEach((row, idx) => {
-        const div = document.createElement("div");
-        div.className = "lb-row";
-        div.innerHTML = `
-          <div style="display:flex;gap:10px;align-items:center">
-            <div class="lb-rank">${idx+1}</div>
-            <div>
-              <div class="lb-addr">${row.address}</div>
-              <div style="color:var(--muted);font-size:12px">txs: ${row.count} · last: ${row.lastInteraction||'—'}</div>
+            <div class="actions">
+                <button id="copyProfile">Copy Profile Link</button>
+                <button id="openArcScan">Open in ArcScan</button>
             </div>
-          </div>
-          <div>
-            <button class="view-btn" data-addr="${row.address}">View</button>
-          </div>
-        `;
-        frag.appendChild(div);
-      });
-      leaderboardEl.innerHTML = "";
-      leaderboardEl.appendChild(frag);
+        </div>
 
-      // attach click handlers for view
-      [...leaderboardEl.querySelectorAll(".view-btn")].forEach(b => {
-        b.onclick = (e) => {
-          const a = e.currentTarget.dataset.addr;
-          window.location.href = `${location.origin}/?addr=${a}`;
-        };
-      });
+        <!-- TRANSACTION LIST -->
+        <div class="card">
+            <h2>Transaction Activity</h2>
+            <div id="txList">Loading...</div>
+        </div>
 
-    } catch(err){
-      console.error(err);
-      leaderboardEl.innerHTML = `<div style="padding:8px;color:var(--muted)">Leaderboards fetch error.</div>`;
-    }
-  }
+        <!-- LEADERBOARD -->
+        <div class="card">
+            <h2>Top Active Wallets</h2>
+            <button id="refreshLB" class="small-btn">Refresh</button>
+            <div id="leaderboard">Loading...</div>
+        </div>
 
-  // utility: show toast
-  function showToast(txt="Copied!"){
-    copyToast.textContent = txt;
-    copyToast.classList.add("show");
-    setTimeout(()=>copyToast.classList.remove("show"),1400);
-  }
+    </div>
+</div>
 
-  // events
-  document.getElementById("check").onclick = runScan;
-  addrInput.onkeydown = e => { if(e.key==="Enter") runScan(); };
-  copyLink.onclick = () => { const w = addrInput.value.trim(); if(!w) return; navigator.clipboard.writeText(`${location.origin}/?addr=${w}`); showToast("Profile link copied"); };
-  refreshLB.onclick = () => fetchLeaderboard(lbLimit.value);
-  lbLimit.onchange = () => fetchLeaderboard(lbLimit.value);
+<!-- Scripts -->
+<script src="wallet.js"></script>
+<script src="leaderboard.js"></script>
 
-  // autoload if ?addr=...
-  ( ()=>{
-    const a = new URLSearchParams(location.search).get("addr");
-    if(a && a.startsWith("0x") && a.length>40){
-      addrInput.value = a;
-      runScan();
-    }
-    // initial load leaderboard
-    fetchLeaderboard(lbLimit.value);
-  })();
-
-</script>
 </body>
 </html>
