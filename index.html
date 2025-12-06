@@ -1,346 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Arc Activity — Cyberpunk</title>
-
-  <!-- Ethers.js -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.10.0/dist/ethers.umd.min.js"></script>
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Arc Activity — Testnet Explorer</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
 
   <style>
-    :root{
-      --bg-1: #070712;
-      --bg-2: #0f1220;
-      --glass: rgba(255,255,255,0.04);
-      --neon-cyan: #6cf2c2;
-      --neon-pink: #ff4db8;
-      --neon-yellow: #ffd166;
-      --muted: #9aa4b2;
-      --accent: #6cf2c2;
-      --card: rgba(255,255,255,0.02);
-      --glass-border: rgba(108,242,194,0.08);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter, Arial, sans-serif;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:#e6eef6;-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-
-    /* animated grid background */
-    body::before{
-      content:"";
-      position:fixed;inset:0;
-      background-image:
-        radial-gradient(circle at 10% 10%, rgba(108,242,194,0.04) 0 2px, transparent 2px),
-        radial-gradient(circle at 90% 90%, rgba(255,77,184,0.02) 0 3px, transparent 3px);
-      background-size: 60px 60px, 120px 120px;
-      mix-blend-mode:screen;
-      opacity:0.8;
-      animation: bgfloat 18s linear infinite;
-      pointer-events:none;
-      z-index:0;
-    }
-    @keyframes bgfloat{ from{transform:translateY(0)} to{transform:translateY(-40px)} }
-
-    /* container */
-    .wrap{
-      position:relative;
-      z-index:2;
-      max-width:930px;
-      margin:40px auto;
-      padding:28px;
-      display:grid;
-      grid-template-columns: 1fr 420px;
-      gap:24px;
-      align-items:start;
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #0b0014, #000);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* left panel */
-    .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid var(--glass-border);
-      border-radius:14px;
-      padding:22px;
-      box-shadow: 0 8px 40px rgba(2,6,23,0.6);
-      backdrop-filter: blur(6px);
-      min-height:360px;
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
     }
 
-    header.site-head{
-      display:flex;gap:12px;align-items:center;margin-bottom:8px;
-    }
-    .logo {
-      width:64px;height:64px;border-radius:10px;
-      background: linear-gradient(135deg,var(--neon-pink),var(--neon-cyan));
-      display:flex;align-items:center;justify-content:center;
-      color:#071017;font-weight:800;font-family:Orbitron,monospace;
-      box-shadow:0 8px 30px rgba(108,242,194,0.06), inset 0 -6px 12px rgba(0,0,0,0.25);
-      transform: rotate(-6deg);
-    }
-    h1.title{font-family:Orbitron,monospace;margin:0;color:var(--neon-cyan);font-size:20px;letter-spacing:0.6px}
-    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
-
-    /* input area */
-    .input-row{display:flex;gap:12px;margin-top:18px}
-    .input-row input{
-      flex:1;padding:14px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-      color: #e6eef6;font-size:14px;outline:none;
-      box-shadow: 0 4px 18px rgba(2,6,23,0.5);
-      transition: box-shadow .18s, transform .12s;
-      font-family: monospace;
-    }
-    .input-row input:focus{ box-shadow: 0 10px 30px rgba(108,242,194,0.06); transform: translateY(-2px); border:1px solid rgba(108,242,194,0.18)}
-    .btn{
-      padding:12px 16px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--neon-cyan),#28c79d);
-      color:#041017;font-weight:700;cursor:pointer;font-size:13px;min-width:120px;
-      display:inline-flex;align-items:center;justify-content:center;
-      box-shadow: 0 8px 30px rgba(44,197,157,0.12);
-    }
-    .btn:active{transform:translateY(1px)}
-
-    /* right panel / card */
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
-      border-radius:12px;padding:20px;border:1px solid rgba(108,242,194,0.04);
-      min-height:360px;box-shadow: 0 8px 40px rgba(2,6,23,0.6);
+    .card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 0 30px rgba(0,255,255,0.1);
     }
 
-    /* result box */
-    .result{margin-top:18px;padding:14px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.02);font-size:14px; color:#dfeeff}
-    .row{display:flex;justify-content:space-between;padding:8px 6px;border-bottom:1px dashed rgba(255,255,255,0.02)}
-    .row:last-child{border-bottom:none}
-    .label{color:var(--muted);font-size:13px}
-    .value{font-weight:600;color:#e6fff6;font-family:monospace}
-
-    .status-pill{
-      display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px;
-      box-shadow:0 8px 20px rgba(0,0,0,0.5);
-    }
-    .active{ background: linear-gradient(90deg,var(--neon-cyan), #2ef2b0); color:#041017; }
-    .inactive{ background: linear-gradient(90deg,#3b3b3b, #262626); color:#bbb; border:1px solid rgba(255,255,255,0.02) }
-
-    footer.foot{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}
-
-    /* neon glitch title accent */
-    .title-glitch{position:relative;display:inline-block}
-    .title-glitch::after, .title-glitch::before {
-      content:attr(data-text);
-      position:absolute;left:0;top:0;opacity:0.85;
-    }
-    .title-glitch::before{color:var(--neon-pink);transform:translate(2px,-1px) skewX(-6deg);mix-blend-mode:screen;filter: blur(0.6px);animation:glitch-1 2.6s infinite linear}
-    .title-glitch::after{color:var(--neon-cyan);transform:translate(-2px,1px) skewX(6deg);mix-blend-mode:screen;filter: blur(0.4px);animation:glitch-2 3.2s infinite linear}
-    @keyframes glitch-1{0%{transform:translate(2px,-1px)}50%{transform:translate(-1px,2px)}100%{transform:translate(2px,-1px)}}
-    @keyframes glitch-2{0%{transform:translate(-2px,1px)}50%{transform:translate(1px,-2px)}100%{transform:translate(-2px,1px)}}
-
-    /* loader */
-    .loader {
-      width:48px; height:48px; border-radius:50%; margin:8px auto 0;
-      background:
-        conic-gradient(from 0deg, rgba(108,242,194,0.95), rgba(108,242,194,0.25) 50%, transparent 60%),
-        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.02), transparent 40%);
-      filter: drop-shadow(0 6px 18px rgba(108,242,194,0.06));
-      animation:spin 1.2s linear infinite;
-    }
-    @keyframes spin{from{transform:rotate(0deg)} to{transform:rotate(360deg)}}
-
-    /* responsive */
-    @media (max-width:920px){
-      .wrap{grid-template-columns: 1fr; padding:18px; margin:18px}
-      .card{order:2}
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
     }
 
+    p {
+      opacity: 0.8;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(90deg, #00ffff, #7f00ff);
+      color: black;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
-
 <body>
-  <div class="wrap">
-    <div class="panel">
-      <header class="site-head">
-        <div class="logo">A</div>
-        <div>
-          <div class="title-glitch" data-text="Arc Activity"><h1 class="title">Arc Activity</h1></div>
-          <p class="lead">Community tool to track wallet activity on Arc Testnet</p>
-        </div>
-      </header>
 
-      <div style="margin-top:12px;">
-        <div class="input-row">
-          <input id="wallet" placeholder="Paste your Arc wallet address (0x...)" />
-          <button class="btn" id="checkBtn">Check Activity</button>
-        </div>
+  <div class="container">
 
-        <div style="display:flex;gap:10px;margin-top:12px;align-items:center">
-          <small style="color:var(--muted)">RPC: <span id="rpcText" style="font-family:monospace;color:var(--neon-yellow)">https://rpc.testnet.arc.network</span></small>
-          <div style="flex:1"></div>
-          <small style="color:var(--muted)">Theme: <span style="font-weight:600">Cyberpunk</span></small>
-        </div>
-
-        <div id="result" class="result" style="display:none">
-          <!-- populated by JS -->
-        </div>
-
-        <footer class="foot">This is a community-built tool. Not officially affiliated with Arc.</footer>
-      </div>
-    </div>
-
+    <!-- CARD PRINCIPAL -->
     <div class="card">
-      <h3 style="margin:0 0 10px 0;color:var(--neon-pink);font-family:Orbitron,monospace">Wallet Snapshot</h3>
-      <div id="cardContent">
-        <div class="row"><div class="label">Wallet</div><div class="value">—</div></div>
-        <div class="row"><div class="label">Balance</div><div class="value">—</div></div>
-        <div class="row"><div class="label">Total Transactions</div><div class="value">—</div></div>
-        <div class="row"><div class="label">First Interaction</div><div class="value">—</div></div>
-        <div class="row"><div class="label">Last Transaction</div><div class="value">—</div></div>
-        <div class="row"><div class="label">Smart Contracts</div><div class="value">—</div></div>
-        <div style="padding:12px 6px"><div id="statusBox" class="status-pill inactive">No Activity</div></div>
-      </div>
+      <h1>Arc Activity</h1>
+      <p>Community tool to track wallet balance on Arc Testnet.</p>
 
-      <div style="margin-top:18px;color:var(--muted);font-size:13px">
-        Tip: paste a testnet wallet address and press <strong>Check Activity</strong>.
+      <input id="wallet" placeholder="Paste your wallet address">
+
+      <button onclick="check()">Check Activity</button>
+
+      <div id="output" class="result"></div>
+
+      <div class="footer">
+        RPC: https://rpc.testnet.arc.network<br>
+        Not affiliated with Arc.
       </div>
     </div>
+
+    <!-- CARD DE STATUS -->
+    <div class="card">
+      <h1>Wallet Snapshot</h1>
+      <div id="snapshot" class="result">
+        Waiting for wallet input...
+      </div>
+    </div>
+
   </div>
 
   <script>
-    const RPC_URL = "https://rpc.testnet.arc.network";
-    const provider = new ethers.JsonRpcProvider(RPC_URL);
+    const provider = new ethers.providers.JsonRpcProvider(
+      "https://rpc.testnet.arc.network"
+    );
 
-    // Helper: format timestamp to readable
-    function fmtTs(ts) {
-      if (!ts) return "—";
-      const d = new Date(ts * 1000);
-      return d.toLocaleString("en-US", { hour12:false });
-    }
+    async function check() {
+      const wallet = document.getElementById("wallet").value;
+      const output = document.getElementById("output");
+      const snapshot = document.getElementById("snapshot");
 
-    // Small utility to create HTML rows
-    function makeRows(data){
-      return `
-        <div class="row"><div class="label">Wallet</div><div class="value">${data.wallet}</div></div>
-        <div class="row"><div class="label">Balance</div><div class="value">${data.balance} ARC</div></div>
-        <div class="row"><div class="label">Total Transactions</div><div class="value">${data.txCount}</div></div>
-        <div class="row"><div class="label">First Interaction</div><div class="value">${data.firstTx || '—'}</div></div>
-        <div class="row"><div class="label">Last Transaction</div><div class="value">${data.lastTx || '—'}</div></div>
-        <div class="row"><div class="label">Smart Contracts Interacted</div><div class="value">${data.contracts || '0'}</div></div>
-      `;
-    }
+      if (!wallet || wallet.length < 40) {
+        output.innerHTML = "⚠️ Invalid wallet address.";
+        return;
+      }
 
-    async function checkActivity() {
-      const wallet = document.getElementById("wallet").value.trim();
-      const resultDiv = document.getElementById("result");
-      const card = document.getElementById("cardContent");
-      const statusBox = document.getElementById("statusBox");
-
-      if (!wallet) { alert("Paste a wallet address first"); return; }
-      if (!ethers.isAddress(wallet)) { alert("Invalid wallet address"); return; }
-
-      // show loader & basic UI update
-      resultDiv.style.display = "block";
-      resultDiv.innerHTML = `<div style="text-align:center;padding:12px"><div class="loader"></div><div style="margin-top:10px;color:var(--muted)">Checking blockchain...</div></div>`;
-
-      // reset card
-      card.innerHTML = `<div style="padding:18px;text-align:center;color:var(--muted)">Fetching live data...</div>`;
-      statusBox.className = "status-pill inactive";
-      statusBox.textContent = "Checking...";
+      output.innerHTML = "⏳ Loading...";
+      snapshot.innerHTML = "Checking balance...";
 
       try {
-        // balance
-        const balanceBn = await provider.getBalance(wallet);
-        const balance = Number(ethers.formatEther(balanceBn)).toFixed(6);
+        const balance = await provider.getBalance(wallet);
+        const eth = ethers.utils.formatEther(balance);
 
-        // basic tx count via getTransactionCount (nonce) - note: nonce isn't total txs if txs sent only; for inspection we will scan latest blocks for received txs (cheap heuristic)
-        const txCountOut = await provider.getTransactionCount(wallet);
-
-        // To find recent txs, we'll fetch last N blocks and filter logs/txs touching the address -
-        // keep N moderate (e.g., 4000 blocks) to avoid heavy calls; here we'll fetch latest 200 blocks as a lightweight heuristic.
-        const latest = await provider.getBlockNumber();
-        const lookback = 200;
-        let totalSeen = 0;
-        let firstTs = null;
-        let lastTs = null;
-        const contracts = new Set();
-
-        // iterate last 200 blocks and check transactions (lightweight: fetch block with transactions)
-        const from = Math.max(0, latest - lookback);
-        for (let b = latest; b >= from; b--) {
-          const block = await provider.getBlockWithTransactions(b);
-          if (!block || !block.transactions) continue;
-          for (const tx of block.transactions) {
-            // transactions where wallet is sender or receiver
-            if (!tx) continue;
-            if (tx.from && tx.from.toLowerCase() === wallet.toLowerCase() ||
-                tx.to && tx.to.toLowerCase() === wallet.toLowerCase()) {
-              totalSeen++;
-              if (!lastTs) lastTs = block.timestamp;
-              firstTs = block.timestamp; // since we iterate descending, this will end up as earliest encountered in the loop end (approx)
-              if (tx.to && tx.to !== null && tx.data && tx.data !== "0x") {
-                // treat as contract interaction
-                contracts.add(tx.to.toLowerCase());
-              } else if (tx.to && tx.to !== null) {
-                // maybe a contract or EOA
-                // we won't differentiate deeply here
-              }
-            }
-          }
-        }
-
-        // Heuristic results
-        const totalTxsHeuristic = totalSeen + txCountOut; // crude combined indicator
-        const isActive = (balanceBn > 0n) || (totalTxsHeuristic > 0);
-
-        // find first and last timestamps properly (best-effort): if lastTs found, set both to human strings
-        const firstInteraction = firstTs ? fmtTs(firstTs) : '—';
-        const lastInteraction  = lastTs  ? fmtTs(lastTs)  : '—';
-
-        // Update result and card
-        const data = {
-          wallet,
-          balance,
-          txCount: totalTxsHeuristic,
-          firstTx: firstInteraction,
-          lastTx: lastInteraction,
-          contracts: contracts.size
-        };
-
-        // render right-side card
-        card.innerHTML = makeRows(data);
-
-        // render result area (larger)
-        resultDiv.innerHTML = `
-          <div style="padding:6px 0">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div style="font-weight:700;color:var(--neon-yellow)">Wallet Snapshot</div>
-              <div style="font-size:13px;color:var(--muted)">RPC live • block ${latest}</div>
-            </div>
-          </div>
-          <div style="margin-top:10px">${makeRows(data)}</div>
+        output.innerHTML = `
+          ✅ Wallet connected<br>
+          Balance: ${eth} ARC
         `;
 
-        // status badge
-        if (isActive) {
-          statusBox.className = "status-pill active";
-          statusBox.textContent = "Active";
-        } else {
-          statusBox.className = "status-pill inactive";
-          statusBox.textContent = "No Activity";
-        }
-
-      } catch (err) {
-        console.error(err);
-        resultDiv.innerHTML = `<div style="color:#ffb4d2;padding:12px">Error connecting to Arc Testnet or rate-limited. Try again in a moment.</div>`;
-        card.innerHTML = `<div class="row"><div class="label">Error</div><div class="value">Unable to fetch data</div></div>`;
-        statusBox.className = "status-pill inactive";
-        statusBox.textContent = "Error";
+        snapshot.innerHTML = `
+          Wallet: ${wallet}<br>
+          Balance: ${eth} ARC
+        `;
+      } catch (e) {
+        output.innerHTML = "❌ Error connecting to Arc RPC.";
+        snapshot.innerHTML = "Unable to fetch data.";
       }
     }
-
-    // wire button and enter key
-    document.getElementById("checkBtn").addEventListener("click", checkActivity);
-    document.getElementById("wallet").addEventListener("keydown", (e)=>{ if (e.key === 'Enter') checkActivity(); });
-
   </script>
+
 </body>
 </html>
