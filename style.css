@@ -4,157 +4,95 @@ body {
     font-family: "Roboto Mono", monospace;
 }
 
-.container {
-    width: 1100px;
-    margin: auto;
-    padding-top: 40px;
-}
-
+/* Title */
 .title {
     text-align: center;
+    font-size: 32px;
     font-family: "Orbitron", sans-serif;
-    font-size: 34px;
     color: #32ffd0;
 }
 
-.subtitle {
-    text-align: center;
-    opacity: 0.7;
-    margin-top: -8px;
-}
-
-.scan-area {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin: 25px 0;
-}
-
-.scan-area input {
-    width: 430px;
-    padding: 12px;
-    background: #11131d;
-    border: 1px solid #333;
-    border-radius: 6px;
-    color: #32ffd0;
-}
-
-.scan-area button {
-    padding: 12px 22px;
-    background: #f062ff;
+/* Buttons */
+#scanBtn {
+    background: #ff4df9;
+    color: black;
+    font-weight: bold;
+    padding: 10px 22px;
+    border-radius: 8px;
     border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#scanBtn:hover {
+    transform: scale(1.05);
+}
+
+/* TX Buttons */
+.btn-small {
+    background: #32ffd0;
+    color: black;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+.btn-small-alt {
+    background: #3f8cff;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Badges */
+.badge-in {
+    background: #32ffd0;
+    color: black;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.badge-out {
+    background: #ff4d8d;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* Scroll */
+.tx-list {
+    background: #141722;
+    padding: 15px;
+    height: 420px;
+    border-radius: 10px;
+    overflow-y: scroll;
+}
+
+.tx-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tx-list::-webkit-scrollbar-thumb {
+    background: #ff4df9;
+    border-radius: 10px;
+}
+
+/* Right panel buttons */
+.actions button {
+    background: #32ffd0;
+    color: black;
+    padding: 10px 18px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
 }
 
-.main-columns {
-    display: flex;
-    gap: 30px;
-    margin-top: 25px;
-}
-
-/* LEFT PANEL */
-
-.left-panel {
-    width: 60%;
-}
-
-.stats-row {
-    display: flex;
-    justify-content: space-between;
-}
-
-.stat-box {
-    background: #141722;
-    padding: 15px;
-    border-radius: 8px;
-    width: 23%;
-}
-
-.stat-box label {
-    font-size: 12px;
-    opacity: 0.6;
-}
-
-.stat-box span {
-    display: block;
-    font-size: 18px;
-    margin-top: 4px;
-    color: #32ffd0;
-}
-
-.tx-list {
-    background: #141722;
-    margin-top: 25px;
-    padding: 15px;
-    border-radius: 10px;
-    height: 500px;
-    overflow-y: scroll;
-}
-
-.tx-item {
-    padding: 12px 0;
-    border-bottom: 1px solid #333;
-}
-
-.tx-item:last-child {
-    border-bottom: none;
-}
-
-.tx-item button {
-    margin-right: 10px;
-    background: #3f8cff;
-    border: none;
-    padding: 5px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-/* RIGHT PANEL */
-
-.right-panel {
-    width: 40%;
-    background: #141722;
-    padding: 20px;
-    border-radius: 10px;
-    height: fit-content;
-}
-
-.snapshot-line {
+/* Leaderboard */
+.refreshLB {
+    background: #ff4df9;
+    padding: 8px 16px;
+    border-radius: 6px;
     margin-bottom: 10px;
-}
-
-.badge-no {
-    background: #ff4d8d;
-    padding: 3px 10px;
-    border-radius: 8px;
-}
-
-.badge-yes {
-    background: #32ffd0;
-    padding: 3px 10px;
-    border-radius: 8px;
-    color: black;
-}
-
-.actions {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-}
-
-.actions button {
-    padding: 10px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.leaderboard-box {
-    background: #0f1119;
-    padding: 12px;
-    border-radius: 6px;
-    min-height: 80px;
-    color: #ccc;
-    margin-top: 10px;
 }
