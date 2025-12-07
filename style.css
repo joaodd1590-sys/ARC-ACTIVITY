@@ -2,7 +2,7 @@
    GLOBAL THEME
 =========================================== */
 :root {
-  --bg: #0f0d17; /* fundo sólido estilo cyberpunk */
+  --bg: #0d0b16; /* fundo sólido igual ao screenshot */
   --neon-cyan: #6cf2c2;
   --neon-pink: #ff4db8;
   --muted: #8f98a6;
@@ -15,14 +15,9 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--bg); /* FONDO LISO E LIMPO */
   font-family: Inconsolata, monospace;
   color: #e6eef6;
-
-  /* NOISE SUAVE */
-  background-image: 
-    radial-gradient(rgba(255,255,255,0.03) 0.7px, transparent 0.7px);
-  background-size: 4px 4px;
 }
 
 /* ===========================================
@@ -197,13 +192,17 @@ button.action {
   display: flex;
   align-items: center;
   justify-content: center;
+
   min-width: 50px;
   height: 30px;
+
   padding: 0 12px;
   border-radius: 18px;
+
   font-weight: 700;
   font-size: 12px;
   color: #041017;
+
   white-space: nowrap;
 }
 
@@ -215,7 +214,9 @@ button.action {
   background: linear-gradient(90deg, #ff4db8, #ff9bd1);
 }
 
-/* SIMPLE BUTTONS */
+/* ===========================================
+   SIMPLE BUTTONS
+=========================================== */
 .btn-ghost {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -225,7 +226,9 @@ button.action {
   cursor: pointer;
 }
 
-/* SNAPSHOT */
+/* ===========================================
+   SNAPSHOT
+=========================================== */
 .side-title {
   font-family: Orbitron;
   color: var(--neon-pink);
@@ -268,7 +271,9 @@ button.action {
   cursor: pointer;
 }
 
-/* LEADERBOARD */
+/* ===========================================
+   LEADERBOARD — COMING SOON
+=========================================== */
 .lb-coming {
   margin-top: 18px;
   padding: 16px;
