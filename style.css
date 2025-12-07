@@ -1,52 +1,28 @@
-:root {
-    --bg: #0d0f16;
-    --panel: #161922;
-    --accent: #ff4ad8;
-    --accent2: #4affd6;
-    --text: #e8e8e8;
-    --muted: #9b9b9b;
-}
-
-/* ===== BODY ===== */
+/* fundo */
 body {
-    background: var(--bg);
-    color: var(--text);
+    background: #0e1013;
     margin: 0;
-    padding: 30px;
-    font-family: "Inconsolata", monospace;
+    font-family: "Share Tech Mono", monospace;
+    color: white;
 }
 
-/* ===== MAIN CONTAINER ===== */
-.container {
-    display: flex;
-    gap: 25px;
-    align-items: flex-start;
+/* layout principal */
+.page {
+    display: grid;
+    grid-template-columns: 65% 35%;
+    gap: 30px;
+    padding: 40px;
 }
 
-/* LEFT SECTION */
-.left {
-    width: 65%;
-}
-
-/* RIGHT SECTION */
-.right {
-    width: 35%;
-}
-
-/* ===== TITLES ===== */
+/* título */
 .title {
-    font-family: "Orbitron", sans-serif;
-    color: var(--accent2);
-    font-size: 32px;
+    font-size: 28px;
+    color: #32ffd2;
+    margin: 0 0 10px;
 }
 
-.subtitle {
-    margin-top: -10px;
-    color: var(--muted);
-}
-
-/* ===== INPUT AREA ===== */
-.input-row {
+/* input + botão */
+.scan-row {
     display: flex;
     gap: 10px;
     margin: 15px 0;
@@ -54,90 +30,108 @@ body {
 
 input {
     flex: 1;
-    padding: 12px;
+    background: #121418;
+    border: 1px solid #2a2f36;
+    padding: 10px;
+    color: #d6d6d6;
     border-radius: 6px;
-    background: var(--panel);
-    border: none;
-    color: var(--text);
 }
 
-/* ===== BUTTONS + ANIMATIONS ===== */
-.btn-primary,
-.btn-secondary {
-    padding: 12px 18px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    transition: 0.15s ease;
-    font-family: inherit;
-}
-
+/* botão principal */
 .btn-primary {
-    background: var(--accent);
+    background: #ff46c7;
+    border: none;
+    padding: 10px 22px;
     color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.15s;
 }
 
-/* hover */
-.btn-primary:hover,
-.btn-secondary:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.2);
+.btn-primary:hover {
+    transform: scale(1.05);
 }
 
-/* click */
-.btn-primary:active,
-.btn-secondary:active {
+.btn-primary:active {
     transform: scale(0.92);
-    filter: brightness(0.75);
 }
 
-.btn-secondary {
-    background: var(--panel);
-    color: var(--accent2);
-    border: 1px solid var(--accent2);
-}
-
-/* ===== TERMINAL ===== */
+/* terminal */
 .terminal {
-    background: var(--panel);
-    height: 350px;   /* altura ORIGINAL */
+    margin-top: 20px;
+    background: #121418;
+    border: 1px solid #2a2f36;
     border-radius: 10px;
-    padding: 12px;
-    margin-top: 15px;
+    height: 430px;
     overflow-y: auto;
+    padding: 15px;
+    white-space: pre-wrap;
 }
 
-/* ===== CARD ===== */
+/* right cards */
 .card {
-    background: var(--panel);
+    background: #121418;
+    border: 1px solid #2a2f36;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 10px;
     margin-bottom: 20px;
 }
 
-.card-title {
-    color: var(--accent);
-    font-family: "Orbitron";
-    font-size: 20px;
-}
-
-/* Wallet snapshot rows */
+/* rows */
 .row {
     display: flex;
     justify-content: space-between;
-    margin: 8px 0;
+    padding: 6px 0;
 }
 
-.btn-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
+.card-title {
+    color: #ff46c7;
+    margin: 0 0 15px;
 }
 
 /* badges */
-.badge-in {
-    color: var(--accent2);
-}
 .badge-out {
-    color: var(--accent);
+    padding: 4px 10px;
+    background: #ff4d79;
+    border-radius: 20px;
+}
+
+.badge-in {
+    padding: 4px 10px;
+    background: #1aff9c;
+    border-radius: 20px;
+}
+
+/* botões secundários */
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #32ffd2;
+    color: #32ffd2;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.btn-secondary:hover {
+    background: #32ffd2;
+    color: black;
+    transform: scale(1.05);
+}
+
+.btn-secondary:active {
+    transform: scale(0.92);
+}
+
+/* botão row */
+.btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* texto cinza */
+.muted {
+    color: #8f9ba8;
+    font-size: 14px;
 }
