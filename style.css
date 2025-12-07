@@ -2,7 +2,7 @@
    GLOBAL THEME
 =========================================== */
 :root {
-  --bg: #0e0c18; /* fundo idêntico ao da imagem enviada */
+  --bg: #05030a;
   --neon-cyan: #6cf2c2;
   --neon-pink: #ff4db8;
   --muted: #8f98a6;
@@ -15,7 +15,8 @@
 
 body {
   margin: 0;
-  background: var(--bg); /* fundo sólido perfeito */
+  /* antes: background: linear-gradient(180deg, #02020a, var(--bg)); */
+  background: #02020a; /* mesma cor da parte de cima do gradiente */
   font-family: Inconsolata, monospace;
   color: #e6eef6;
 }
@@ -138,6 +139,7 @@ button.action {
   border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
+/* Scroll bonito */
 .terminal::-webkit-scrollbar {
   width: 8px;
 }
@@ -185,7 +187,7 @@ button.action {
 }
 
 /* ===========================================
-   BADGES IN / OUT
+   BADGES IN / OUT — (Centralized Perfectly)
 =========================================== */
 .badge-in,
 .badge-out {
