@@ -1,69 +1,94 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ARC Activity Tracker</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ARC ACTIVITY TRACKER</title>
 
-    <!-- remove o ícone -->
-    <link rel="icon" href="" />
+  <!-- Removi o <link rel="icon" ...> pra não aparecer imagem na aba -->
 
-    <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+  <div class="wrap">
 
-<div class="page">
+    <!-- LEFT PANEL -->
+    <div class="panel">
+      <div class="term-title">ARC ACTIVITY TRACKER</div>
+      <div class="term-sub">Community scanner — shows live activity on Arc Testnet</div>
 
-    <!-- LEFT SECTION -->
-    <div class="left-side">
+      <div class="input-row">
+        <input id="addr" class="address" placeholder="Paste Arc Testnet wallet (0x...)" />
+        <button id="check" class="action">Run Scan</button>
+      </div>
 
-        <h1 class="title">ARC ACTIVITY TRACKER</h1>
-        <p class="subtitle">Community scanner – shows live activity on Arc Testnet</p>
+      <div class="small">Uses ArcScan API via server backend. No wallet signatures required.</div>
 
-        <div class="scan-row">
-            <input id="addr" placeholder="Paste Arc Testnet wallet (0x...)" />
-            <button id="check" class="btn-primary">Run Scan</button>
+      <div id="summary" class="summary" style="display:none;">
+        <div class="stat">
+          <div class="label">Total</div>
+          <div id="tcount" class="num">0</div>
         </div>
+        <div class="stat">
+          <div class="label">First Tx</div>
+          <div id="first" class="num">--</div>
+        </div>
+        <div class="stat">
+          <div class="label">Last Tx</div>
+          <div id="last" class="num">--</div>
+        </div>
+        <div class="stat">
+          <div class="label">Status</div>
+          <div id="status" class="num">--</div>
+        </div>
+      </div>
 
-        <p class="muted">
-            Uses ArcScan API via server backend. No wallet signatures required.<br>
-            Run a scan to show the latest transactions (Arc Testnet).
-        </p>
-
-        <div id="terminal" class="terminal"></div>
-
+      <div id="terminal" class="terminal" role="log">
+        Run a scan to show the latest transactions (Arc Testnet).
+      </div>
     </div>
 
-    <!-- RIGHT SECTION -->
-    <div class="right-side">
+    <!-- RIGHT PANEL -->
+    <div class="panel snapshot-panel">
+      <div class="side-title">Wallet Snapshot</div>
 
-        <div class="card">
-            <h2 class="card-title">Wallet Snapshot</h2>
-
-            <div class="row"><span>Wallet</span> <span id="snapWallet">--</span></div>
-            <div class="row"><span>Network</span> <span>Arc Testnet</span></div>
-            <div class="row"><span>Tx Count</span> <span id="snapTx">0</span></div>
-            <div class="row"><span>Active</span> <span id="snapActive" class="badge-out">No</span></div>
-
-            <div class="btn-row">
-                <button id="copyLink" class="btn-secondary">Copy Profile Link</button>
-                <button id="openExplorer" class="btn-secondary">Open in ArcScan</button>
-            </div>
+      <div class="snapshot">
+        <div class="row">
+          <div>Wallet</div>
+          <div id="snapWallet">--</div>
+        </div>
+        <div class="row">
+          <div>Network</div>
+          <div>Arc Testnet</div>
+        </div>
+        <div class="row">
+          <div>Tx Count</div>
+          <div id="snapTx">0</div>
+        </div>
+        <div class="row">
+          <div>Active</div>
+          <div id="snapActive"><span class="badge-out">No</span></div>
         </div>
 
-        <div class="card">
-            <h2 class="card-title">🌐 Leaderboard Coming Soon</h2>
-            <p class="muted">
-                Soon: ranking of the 50 most active wallets on the Arc Testnet.
-            </p>
+        <div class="copy">
+          <button id="copyLink" class="btn-primary">Copy Profile Link</button>
+          <button id="openExplorer" class="btn-primary">Open in ArcScan</button>
         </div>
+      </div>
 
+      <!-- Leaderboard -->
+      <div class="lb-coming">
+        <div class="lb-coming-title">🌐 Leaderboard Coming Soon</div>
+        <div class="lb-coming-sub">
+          Soon: ranking of the 50 most active wallets on the Arc Testnet.
+        </div>
+      </div>
     </div>
 
-</div>
+  </div>
 
-<script src="main.js"></script>
-
+  <script src="wallet.js"></script>
 </body>
 </html>
