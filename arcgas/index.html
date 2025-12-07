@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arc Gas Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+    <h1>ARC GAS ANALYZER</h1>
+    <p class="sub">Calculate gas usage from any Arc Testnet transaction</p>
+
+    <div class="input-row">
+        <input id="txid" type="text" placeholder="Paste Arc Testnet TX hash (0x...)">
+        <button onclick="checkGas()">Analyze</button>
+    </div>
+
+    <div id="result" class="result"></div>
+</div>
+
+<script src="gas.js"></script>
+</body>
+</html>
