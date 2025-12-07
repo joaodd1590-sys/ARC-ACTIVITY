@@ -2,7 +2,7 @@
    GLOBAL THEME
 =========================================== */
 :root {
-  --bg: #0d0b16; /* fundo sólido igual ao screenshot */
+  --bg: #0e0c18; /* fundo idêntico ao da imagem enviada */
   --neon-cyan: #6cf2c2;
   --neon-pink: #ff4db8;
   --muted: #8f98a6;
@@ -15,7 +15,7 @@
 
 body {
   margin: 0;
-  background: var(--bg); /* FONDO LISO E LIMPO */
+  background: var(--bg); /* fundo sólido perfeito */
   font-family: Inconsolata, monospace;
   color: #e6eef6;
 }
