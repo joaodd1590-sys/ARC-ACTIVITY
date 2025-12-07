@@ -1,5 +1,5 @@
 // ===============================
-// ACTIVITY TRACKER - FRONTEND
+// ARC ACTIVITY TRACKER - FRONTEND
 // ===============================
 
 const addrInput     = document.getElementById("addr");
@@ -47,8 +47,7 @@ function appendTx(tx, wallet) {
   const fromText = tx.from || "--";
   const toText   = tx.to   || "--";
 
-  // ❗ ALTERAÇÃO AQUI: "0 ARC" → "0 USDC"
-  const totalText = (tx.total || tx.value || "0") + " USDC";
+  const totalText = tx.total || tx.value || "0 USDC";
 
   row.innerHTML = `
     <div class="left">
@@ -73,11 +72,11 @@ async function runScan() {
   const wallet = addrInput.value.trim();
 
   if (!wallet || !wallet.startsWith("0x") || wallet.length < 40) {
-    alert("Paste a valid Testnet wallet (0x...)");
+    alert("Paste a valid Arc Testnet wallet (0x...)");
     return;
   }
 
-  terminal.innerHTML = `<div style="padding:10px; color:var(--muted);">Scanning network...</div>`;
+  terminal.innerHTML = `<div style="padding:10px; color:var(--muted);">Scanning Arc Testnet...</div>`;
   summary.style.display = "none";
 
   snapWalletEl.textContent = shortAddr(wallet);
@@ -136,7 +135,9 @@ copyLinkBtn?.addEventListener("click", () => {
   if (!wallet) return;
   const url = `${location.origin}/?addr=${encodeURIComponent(wallet)}`;
   navigator.clipboard.writeText(url);
-  alert("Profile link copied");
+
+  copyLinkBtn.style.transform = "scale(1.1)";
+  setTimeout(() => copyLinkBtn.style.transform = "scale(1)", 150);
 });
 
 openExpBtn?.addEventListener("click", () => {
