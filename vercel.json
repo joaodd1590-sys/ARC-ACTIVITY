@@ -1,14 +1,16 @@
 {
   "rewrites": [
     {
+      "source": "/arcgas",
+      "destination": "/arcgas/index.html"
+    },
+    {
+      "source": "/arcgas/",
+      "destination": "/arcgas/index.html"
+    },
+    {
       "source": "/arcgas/:path*",
       "destination": "/arcgas/:path*"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/arcgas",
-      "dest": "/arcgas/index.html"
     }
   ]
 }
