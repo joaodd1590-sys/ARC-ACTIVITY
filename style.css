@@ -1,167 +1,160 @@
-:root {
-  --bg: #02020a;
-  --neon-cyan: #6cf2c2;
-  --neon-pink: #ff4db8;
-  --muted: #8f98a6;
-  --accent: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+// ===============================
+// ARC ACTIVITY TRACKER - FRONTEND
+// ===============================
+
+const addrInput     = document.getElementById("addr");
+const checkBtn      = document.getElementById("check");
+const terminal      = document.getElementById("terminal");
+const summary       = document.getElementById("summary");
+const tcountEl      = document.getElementById("tcount");
+const firstEl       = document.getElementById("first");
+const lastEl        = document.getElementById("last");
+const statusEl      = document.getElementById("status");
+const snapWalletEl  = document.getElementById("snapWallet");
+const snapTxEl      = document.getElementById("snapTx");
+const snapActiveEl  = document.getElementById("snapActive");
+const copyLinkBtn   = document.getElementById("copyLink");
+const openExpBtn    = document.getElementById("openExplorer");
+
+function clearTerminal() {
+  terminal.innerHTML = "";
 }
 
-body {
-  margin: 0;
-  background: #02020a;
-  font-family: Inconsolata, monospace;
-  color: #e6eef6;
+function shortAddr(addr) {
+  if (!addr || addr.length < 10) return addr || "--";
+  return addr.slice(0, 6) + "..." + addr.slice(-4);
 }
 
-/* GRID */
-.wrap {
-  max-width: 1200px;
-  margin: 28px auto;
-  padding: 22px;
-  display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: 22px;
+function appendTx(tx, wallet) {
+  const row = document.createElement("div");
+  row.className = "tx";
+
+  const wLower = wallet.toLowerCase();
+  const fromLower = (tx.from || "").toLowerCase();
+  const toLower   = (tx.to || "").toLowerCase();
+
+  let direction = "";
+  if (fromLower === wLower) direction = "OUT";
+  else if (toLower === wLower) direction = "IN";
+
+  const badge =
+    direction === "IN"
+      ? `<span class="badge-in">IN</span>`
+      : direction === "OUT"
+      ? `<span class="badge-out">OUT</span>`
+      : "";
+
+  const fromText = tx.from || "--";
+  const toText   = tx.to   || "--";
+
+  const totalText = tx.total || tx.value || "0 ARC";
+
+  row.innerHTML = `
+    <div class="left">
+      <div class="hash">${tx.hash}</div>
+      <div class="meta">
+        ${fromText} → ${toText}
+        • Total: ${totalText}
+        • ${tx.time}
+      </div>
+    </div>
+    <div class="actions">
+      ${badge}
+      <button class="btn-ghost" onclick="navigator.clipboard.writeText('${tx.hash}')">Copy</button>
+      <button class="btn-ghost" onclick="window.open('${tx.link}','_blank')">Explorer</button>
+    </div>
+  `;
+
+  terminal.prepend(row);
 }
 
-.panel {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  padding: 18px;
-  border: 1px solid rgba(108, 242, 194, 0.04);
-}
+async function runScan() {
+  const wallet = addrInput.value.trim();
 
-.term-title {
-  font-family: Orbitron;
-  color: var(--neon-cyan);
-  font-size: 22px;
-}
+  if (!wallet || !wallet.startsWith("0x") || wallet.length < 40) {
+    alert("Paste a valid Arc Testnet wallet (0x...)");
+    return;
+  }
 
-.input-row {
-  display: flex;
-  gap: 10px;
-  margin: 14px 0 18px 0;
-}
+  terminal.innerHTML = `<div style="padding:10px; color:var(--muted);">Scanning Arc Testnet...</div>`;
+  summary.style.display = "none";
 
-input.address {
-  flex: 1;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  background: rgba(0, 0, 0, 0.35);
-  color: #e6eef6;
-}
+  snapWalletEl.textContent = shortAddr(wallet);
+  snapTxEl.textContent = "0";
+  snapActiveEl.innerHTML = `<span class="badge-out">No</span>`;
 
-button.action {
-  min-width: 160px;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  background: var(--accent);
-  color: #041017;
-  cursor: pointer;
-  font-weight: 700;
-}
+  try {
+    const resp = await fetch(`/api/activity?address=${encodeURIComponent(wallet)}`);
+    if (!resp.ok) {
+      terminal.innerHTML = `<div style="padding:10px; color:var(--muted);">Server error ${resp.status}</div>`;
+      return;
+    }
 
-.summary {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
+    const data = await resp.json();
+    const txs = data.transactions || [];
+    const total = txs.length;
 
-.stat {
-  background: rgba(255, 255, 255, 0.02);
-  padding: 12px;
-  border-radius: 8px;
-  min-width: 150px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-}
+    tcountEl.textContent = total.toString();
+    snapTxEl.textContent = total.toString();
 
-.terminal {
-  margin-top: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 10px;
-  padding: 12px;
-  min-height: 260px;
-  max-height: 480px;
-  overflow: auto;
-}
+    if (total > 0) {
+      const newest = txs[0];
+      const oldest = txs[txs.length - 1];
 
-.tx {
-  padding: 10px 4px;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-}
+      firstEl.textContent  = oldest.time || "--";
+      lastEl.textContent   = newest.time || "--";
+      statusEl.textContent = "ACTIVE";
+      statusEl.style.color = "#00ff9c";
+      snapActiveEl.innerHTML = `<span class="badge-in">Yes</span>`;
+    } else {
+      firstEl.textContent  = "--";
+      lastEl.textContent   = "--";
+      statusEl.textContent = "NO ACTIVITY";
+      statusEl.style.color = "#ff6b6b";
+      snapActiveEl.innerHTML = `<span class="badge-out">No</span>`;
+    }
 
-.hash {
-  color: var(--neon-pink);
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 550px;
-}
+    summary.style.display = "flex";
 
-.meta {
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 6px;
-}
+    clearTerminal();
 
-/* BADGES */
-.badge-in, .badge-out {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 50px;
-  height: 30px;
-  padding: 0 12px;
-  border-radius: 18px;
-  font-weight: 700;
-  font-size: 12px;
-  color: #041017;
-}
+    if (!txs.length) {
+      terminal.innerHTML = `<div style="padding:10px; color:var(--muted);">No transactions found for this wallet.</div>`;
+      return;
+    }
 
-.badge-in {
-  background: linear-gradient(90deg, #00ffad, #6cf2c2);
-}
+    txs.forEach(tx => appendTx(tx, wallet));
 
-.badge-out {
-  background: linear-gradient(90deg, #ff4db8, #ff9bd1);
-}
-
-.side-title {
-  font-family: Orbitron;
-  font-size: 18px;
-  color: var(--neon-pink);
-}
-
-.snapshot {
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
-}
-
-.lb-coming {
-  margin-top: 18px;
-  padding: 16px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-@media (max-width: 980px) {
-  .wrap {
-    grid-template-columns: 1fr;
+  } catch (err) {
+    terminal.innerHTML = `<div style="padding:10px; color:var(--muted);">Network error while contacting backend.</div>`;
   }
 }
+
+copyLinkBtn?.addEventListener("click", () => {
+  const wallet = addrInput.value.trim();
+  if (!wallet) return;
+  const url = `${location.origin}/?addr=${encodeURIComponent(wallet)}`;
+  navigator.clipboard.writeText(url);
+  alert("Profile link copied");
+});
+
+openExpBtn?.addEventListener("click", () => {
+  const wallet = addrInput.value.trim();
+  if (!wallet) return;
+  window.open(`https://testnet.arcscan.app/address/${wallet}`, "_blank");
+});
+
+checkBtn.addEventListener("click", runScan);
+
+addrInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") runScan();
+});
+
+(function autoloadFromQuery() {
+  const params = new URLSearchParams(location.search);
+  const a = params.get("addr");
+  if (a && a.startsWith("0x") && a.length > 40) {
+    addrInput.value = a;
+    runScan();
+  }
+})();
