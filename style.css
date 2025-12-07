@@ -7,32 +7,37 @@
     --muted: #9b9b9b;
 }
 
+/* ===== BODY ===== */
 body {
-    margin: 0;
-    padding: 0;
     background: var(--bg);
     color: var(--text);
+    margin: 0;
+    padding: 30px;
     font-family: "Inconsolata", monospace;
 }
 
+/* ===== MAIN CONTAINER ===== */
 .container {
     display: flex;
-    justify-content: space-between;
-    padding: 40px;
-    gap: 40px;
+    gap: 25px;
+    align-items: flex-start;
 }
 
+/* LEFT SECTION */
 .left {
-    width: 60%;
+    width: 65%;
 }
 
+/* RIGHT SECTION */
 .right {
     width: 35%;
 }
 
+/* ===== TITLES ===== */
 .title {
     font-family: "Orbitron", sans-serif;
     color: var(--accent2);
+    font-size: 32px;
 }
 
 .subtitle {
@@ -40,49 +45,50 @@ body {
     color: var(--muted);
 }
 
+/* ===== INPUT AREA ===== */
 .input-row {
     display: flex;
     gap: 10px;
-    margin-bottom: 15px;
+    margin: 15px 0;
 }
 
 input {
     flex: 1;
     padding: 12px;
     border-radius: 6px;
-    border: none;
     background: var(--panel);
+    border: none;
     color: var(--text);
-    font-size: 14px;
 }
 
+/* ===== BUTTONS + ANIMATIONS ===== */
 .btn-primary,
 .btn-secondary {
     padding: 12px 18px;
     border-radius: 6px;
     border: none;
     cursor: pointer;
-    font-family: "Inconsolata", monospace;
-    transition: transform 0.15s ease, background 0.2s ease;
+    transition: 0.15s ease;
+    font-family: inherit;
 }
 
 .btn-primary {
     background: var(--accent);
-    color: #fff;
+    color: white;
 }
 
-/* Hover Animation */
+/* hover */
 .btn-primary:hover,
 .btn-secondary:hover {
-    transform: scale(1.05);
-    filter: brightness(1.15);
+    transform: translateY(-2px);
+    filter: brightness(1.2);
 }
 
-/* Click Animation */
+/* click */
 .btn-primary:active,
 .btn-secondary:active {
     transform: scale(0.92);
-    filter: brightness(0.8);
+    filter: brightness(0.75);
 }
 
 .btn-secondary {
@@ -91,20 +97,17 @@ input {
     border: 1px solid var(--accent2);
 }
 
-.info {
-    color: var(--muted);
-    font-size: 14px;
-}
-
+/* ===== TERMINAL ===== */
 .terminal {
     background: var(--panel);
-    height: 320px;
-    border-radius: 8px;
-    margin-top: 20px;
-    padding: 10px;
+    height: 350px;   /* altura ORIGINAL */
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 15px;
     overflow-y: auto;
 }
 
+/* ===== CARD ===== */
 .card {
     background: var(--panel);
     padding: 20px;
@@ -115,8 +118,10 @@ input {
 .card-title {
     color: var(--accent);
     font-family: "Orbitron";
+    font-size: 20px;
 }
 
+/* Wallet snapshot rows */
 .row {
     display: flex;
     justify-content: space-between;
@@ -126,13 +131,13 @@ input {
 .btn-row {
     display: flex;
     gap: 10px;
-    margin-top: 15px;
+    margin-top: 12px;
 }
 
+/* badges */
 .badge-in {
     color: var(--accent2);
 }
-
 .badge-out {
     color: var(--accent);
 }
