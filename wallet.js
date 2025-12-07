@@ -27,7 +27,7 @@ function appendTx(tx, wallet) {
     row.innerHTML = `
         <div>
             <div class="hash">${tx.hash}</div>
-            <div class="meta">${tx.from} → ${tx.to} • ${tx.value} USDC • ${tx.time}</div>
+            <div class="meta">${tx.from} → ${tx.to} • ${tx.value} • ${tx.time}</div>
         </div>
         <div class="actions">
             ${badge}
