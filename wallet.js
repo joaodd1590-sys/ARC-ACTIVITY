@@ -13,7 +13,6 @@ const snapActiveEl  = document.getElementById("snapActive");
 const copyLinkBtn   = document.getElementById("copyLink");
 const openExpBtn    = document.getElementById("openExplorer");
 
-// Helpers
 function shortAddr(a) {
   return a.slice(0, 6) + "..." + a.slice(-4);
 }
@@ -30,10 +29,9 @@ function clearTerminal() {
   terminal.innerHTML = "";
 }
 
-// Render TX em layout profissional
 function appendTx(tx, wallet) {
   const isOut = tx.from.toLowerCase() === wallet.toLowerCase();
-  const badge = isOut
+  const badge = isOut 
     ? `<span class="badge-out">OUT</span>`
     : `<span class="badge-in">IN</span>`;
 
@@ -72,7 +70,6 @@ function appendTx(tx, wallet) {
   terminal.prepend(row);
 }
 
-// MAIN
 async function runScan() {
   const wallet = addrInput.value.trim();
 
@@ -105,8 +102,7 @@ async function runScan() {
     snapActiveEl.textContent = txs.length ? "Yes" : "No";
 
     if (!txs.length) {
-      terminal.innerHTML =
-        "<div style='color:#aaa;'>Nenhuma transação USDC encontrada.</div>";
+      terminal.innerHTML = "<div style='color:#aaa;'>Nenhuma transação USDC encontrada.</div>";
       resultsContainer.classList.remove("hidden");
       return;
     }
@@ -122,7 +118,6 @@ async function runScan() {
 }
 
 checkBtn.onclick = runScan;
-
 addrInput.addEventListener("keyup", e => {
   if (e.key === "Enter") runScan();
 });
