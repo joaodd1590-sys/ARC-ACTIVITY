@@ -1,132 +1,141 @@
-// ARC Testnet USDC (ERC-20) Live Integration
+// ARC Testnet USDC Integration
+const USDC_CONTRACT = "0x3600000000000000000000000000000000000000";
 
 const addrInput     = document.getElementById("addr");
 const checkBtn      = document.getElementById("check");
 const terminal      = document.getElementById("terminal");
+const resultsContainer = document.getElementById("resultsContainer");
+
 const snapWalletEl  = document.getElementById("snapWallet");
 const snapTxEl      = document.getElementById("snapTx");
 const snapActiveEl  = document.getElementById("snapActive");
+
 const copyLinkBtn   = document.getElementById("copyLink");
 const openExpBtn    = document.getElementById("openExplorer");
 
-const USDC_CONTRACT = "0x3600000000000000000000000000000000000000";
-
-// limpar
-function clearTerminal() {
-  terminal.innerHTML = "";
-}
-
-// endereço curto
+// Helpers
 function shortAddr(a) {
   return a.slice(0, 6) + "..." + a.slice(-4);
 }
 
-// timestamp → data formatada
 function formatTime(ts) {
-  const d = new Date(ts * 1000);
-  return d.toLocaleString("pt-BR");
+  return new Date(ts * 1000).toLocaleString("pt-BR");
 }
 
-// converter USDC (6 decimals)
 function formatUSDC(raw) {
   return (Number(raw) / 1e6).toFixed(2);
 }
 
-// render tx
-function appendTx(tx, wallet) {
-  const row = document.createElement("div");
-  row.className = "tx";
+function clearTerminal() {
+  terminal.innerHTML = "";
+}
 
+// Render TX em layout profissional
+function appendTx(tx, wallet) {
   const isOut = tx.from.toLowerCase() === wallet.toLowerCase();
   const badge = isOut
     ? `<span class="badge-out">OUT</span>`
     : `<span class="badge-in">IN</span>`;
 
-  const explorerURL = `https://testnet.arcscan.app/tx/${tx.hash}`;
   const value = formatUSDC(tx.value);
+  const link = `https://testnet.arcscan.app/tx/${tx.hash}`;
+
+  const row = document.createElement("div");
+  row.className = "tx";
 
   row.innerHTML = `
-    <div>
-      <div class="hash">${tx.hash}</div>
-      <div class="meta">
-        ${tx.from} → ${tx.to} • ${value} USDC • ${formatTime(tx.timeStamp)}
+    <div class="tx-top">
+      <div class="addresses">
+        <div>
+          <div class="addr-label">From</div>
+          <div class="addr-value">${tx.from}</div>
+        </div>
+        <div>
+          <div class="addr-label">To</div>
+          <div class="addr-value">${tx.to}</div>
+        </div>
       </div>
+
+      <div>${badge}</div>
     </div>
 
-    <div class="actions">
-      ${badge}
-      <button class="btn-secondary" onclick="navigator.clipboard.writeText('${tx.hash}')">Copy</button>
-      <button class="btn-secondary" onclick="window.open('${explorerURL}', '_blank')">Explorer</button>
+    <div class="tx-bottom">
+      <div class="tx-meta">${value} USDC • ${formatTime(tx.timeStamp)}</div>
+
+      <div class="tx-actions">
+        <button class="btn-secondary" onclick="navigator.clipboard.writeText('${tx.hash}')">Copy</button>
+        <button class="btn-secondary" onclick="window.open('${link}', '_blank')">Explorer</button>
+      </div>
     </div>
   `;
 
   terminal.prepend(row);
 }
 
-// MAIN SCAN
+// MAIN
 async function runScan() {
   const wallet = addrInput.value.trim();
 
-  if (!wallet.startsWith("0x") || wallet.length < 40) {
+  if (!wallet.startsWith("0x") || wallet.length < 42) {
     alert("Endereço inválido.");
     return;
   }
 
-  terminal.innerHTML =
-    "<div style='color:#aaa;padding:10px;'>Carregando transações USDC...</div>";
+  resultsContainer.classList.add("hidden");
+  terminal.innerHTML = "<div style='color:#aaa;'>Carregando...</div>";
 
   snapWalletEl.textContent = shortAddr(wallet);
   snapTxEl.textContent = "0";
-  snapActiveEl.innerHTML = `<span class="badge-out">No</span>`;
+  snapActiveEl.textContent = "No";
 
   try {
-    // 🔥 API REAL ERC-20 USDC
-    const url = `https://testnet.arcscan.app/api?module=account&action=tokentx&contractaddress=${USDC_CONTRACT}&address=${wallet}`;
+    const url =
+      `https://testnet.arcscan.app/api?module=account&action=tokentx` +
+      `&contractaddress=${USDC_CONTRACT}&address=${wallet}`;
+
     const res = await fetch(url);
     const data = await res.json();
-
     const txs = data.result || [];
-
-    // ordenar por data crescente
-    txs.sort((a, b) => Number(a.timeStamp) - Number(b.timeStamp));
 
     clearTerminal();
 
+    txs.sort((a, b) => Number(a.timeStamp) - Number(b.timeStamp));
+
     snapTxEl.textContent = txs.length;
-    snapActiveEl.innerHTML = txs.length
-      ? `<span class="badge-in">Yes</span>`
-      : `<span class="badge-out">No</span>`;
+    snapActiveEl.textContent = txs.length ? "Yes" : "No";
 
     if (!txs.length) {
       terminal.innerHTML =
-        "<div style='color:#aaa;padding:10px;'>Nenhuma transação USDC encontrada.</div>";
+        "<div style='color:#aaa;'>Nenhuma transação USDC encontrada.</div>";
+      resultsContainer.classList.remove("hidden");
       return;
     }
 
-    txs.forEach((tx) => appendTx(tx, wallet));
+    txs.forEach(tx => appendTx(tx, wallet));
+
+    resultsContainer.classList.remove("hidden");
+
   } catch (err) {
-    console.error(err);
     terminal.innerHTML =
-      "<div style='color:#aaa;padding:10px;'>Erro ao conectar à API.</div>";
+      "<div style='color:#aaa;'>Erro ao conectar à API.</div>";
   }
 }
 
 checkBtn.onclick = runScan;
-addrInput.addEventListener("keyup", (e) => {
+
+addrInput.addEventListener("keyup", e => {
   if (e.key === "Enter") runScan();
 });
 
-// shareable link
 copyLinkBtn.onclick = () => {
   const wallet = addrInput.value.trim();
-  const url = `${location.origin}${location.pathname}?addr=${encodeURIComponent(wallet)}`;
-  navigator.clipboard.writeText(url);
+  navigator.clipboard.writeText(
+    `${location.origin}${location.pathname}?addr=${wallet}`
+  );
   alert("Copiado!");
 };
 
-// abrir explorer
 openExpBtn.onclick = () => {
   const wallet = addrInput.value.trim();
-  if (!wallet) return;
   window.open(`https://testnet.arcscan.app/address/${wallet}`, "_blank");
 };
