@@ -2,54 +2,65 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ARC Activity Tracker</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARC Activity Scanner</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+
   <div class="app-shell">
 
     <header class="app-header">
-      <h1>ARC Activity Tracker</h1>
-      <p class="subtitle">Track ARC user activity directly from the public API</p>
+      <h1>ARC Activity Scanner</h1>
+      <p class="subtitle">Track ARC Testnet user activity via public API</p>
     </header>
 
+    <!-- INPUT CARD -->
     <section class="card input-card">
       <div class="input-wrapper">
-        <input id="walletInput" placeholder="Paste an ARC wallet address (0x...)" />
-        <button id="checkBtn">Check</button>
+        <input id="addr" placeholder="Paste ARC wallet (0x...)" />
+        <button id="check">Scan</button>
       </div>
-      <p id="statusMsg" class="status-msg"></p>
     </section>
 
-    <section class="card result-card hidden">
-      <h2>User Activity</h2>
+    <!-- SNAPSHOT -->
+    <section class="card snapshot-card">
+      <h2>Wallet Snapshot</h2>
 
       <div class="result-row">
-        <span class="label">Address</span>
-        <span id="walletDisplay" class="value"></span>
+        <span class="label">Wallet</span>
+        <span id="snapWallet" class="value">-</span>
       </div>
 
       <div class="result-row">
-        <span class="label">Total Transactions</span>
-        <span id="txCount" class="value"></span>
+        <span class="label">Total TXs</span>
+        <span id="snapTx" class="value">0</span>
       </div>
 
       <div class="result-row">
-        <span class="label">Last Activity</span>
-        <span id="lastActivity" class="value"></span>
+        <span class="label">Active?</span>
+        <span id="snapActive" class="value">No</span>
       </div>
 
-      <p class="footer-note">Based on ARC public testnet API</p>
+      <div class="snapshot-actions">
+        <button id="copyLink" class="btn-secondary">Copy Link</button>
+        <button id="openExplorer" class="btn-secondary">Open Explorer</button>
+      </div>
+    </section>
+
+    <!-- TERMINAL CARD -->
+    <section class="card">
+      <h2>Transactions</h2>
+      <div id="terminal" class="terminal"></div>
     </section>
 
     <footer class="app-footer">
-      Built by João Carlos · ARC ecosystem community tool
+      Built by João Carlos · ARC community tool
     </footer>
 
   </div>
 
-  <script src="script.js"></script>
+  <script src="wallet.js"></script>
 </body>
 </html>
