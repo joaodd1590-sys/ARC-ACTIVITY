@@ -37,6 +37,7 @@ body {
   font-size: 14px;
 }
 
+/* CARDS */
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -45,6 +46,7 @@ body {
   margin-bottom: 18px;
 }
 
+/* INPUT */
 .input-wrapper {
   display: flex;
   gap: 10px;
@@ -73,6 +75,7 @@ body {
   background: var(--accent-hover);
 }
 
+/* SNAPSHOT */
 .result-row {
   display: flex;
   justify-content: space-between;
@@ -86,6 +89,18 @@ body {
   gap: 10px;
 }
 
+/* ACTIVE STATUS */
+.active-yes {
+  color: #2ecc71;
+  font-weight: 700;
+}
+
+.active-no {
+  color: #ff4d4d;
+  font-weight: 700;
+}
+
+/* BUTTONS SEC */
 .btn-secondary {
   padding: 8px 14px;
   border-radius: 8px;
@@ -109,6 +124,27 @@ body {
   overflow-y: auto;
 }
 
+/* BEAUTIFUL SCROLLBAR */
+.terminal::-webkit-scrollbar {
+  width: 8px;
+}
+.terminal::-webkit-scrollbar-track {
+  background: #0b0f1a;
+  border-radius: 10px;
+}
+.terminal::-webkit-scrollbar-thumb {
+  background: #1d9bf0;
+  border-radius: 10px;
+}
+.terminal::-webkit-scrollbar-thumb:hover {
+  background: #4ab3ff;
+}
+.terminal {
+  scrollbar-color: #1d9bf0 #0b0f1a;
+  scrollbar-width: thin;
+}
+
+/* TX BOX */
 .tx {
   padding: 14px;
   margin-bottom: 12px;
@@ -170,4 +206,28 @@ body {
 
 .tx-actions button {
   margin-left: 6px;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 520px) {
+
+  .tx-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .tx-bottom {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .input-wrapper {
+    flex-direction: column;
+  }
+
+  #check {
+    width: 100%;
+  }
 }
