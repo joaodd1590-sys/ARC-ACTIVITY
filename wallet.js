@@ -83,7 +83,7 @@ async function runScan() {
 
   snapWalletEl.textContent = shortAddr(wallet);
   snapTxEl.textContent = "0";
-  snapActiveEl.textContent = "No";
+  snapActiveEl.innerHTML = `<span class="active-no">No</span>`;
 
   try {
     const url =
@@ -99,10 +99,13 @@ async function runScan() {
     txs.sort((a, b) => Number(a.timeStamp) - Number(b.timeStamp));
 
     snapTxEl.textContent = txs.length;
-    snapActiveEl.textContent = txs.length ? "Yes" : "No";
+    snapActiveEl.innerHTML = txs.length
+      ? `<span class="active-yes">Yes</span>`
+      : `<span class="active-no">No</span>`;
 
     if (!txs.length) {
-      terminal.innerHTML = "<div style='color:#aaa;'>Nenhuma transação USDC encontrada.</div>";
+      terminal.innerHTML =
+        "<div style='color:#aaa;'>Nenhuma transação USDC encontrada.</div>";
       resultsContainer.classList.remove("hidden");
       return;
     }
@@ -118,6 +121,7 @@ async function runScan() {
 }
 
 checkBtn.onclick = runScan;
+
 addrInput.addEventListener("keyup", e => {
   if (e.key === "Enter") runScan();
 });
