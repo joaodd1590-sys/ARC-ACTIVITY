@@ -1,82 +1,90 @@
-// THEME TOGGLE
-document.getElementById("themeToggle").addEventListener("click", () => {
-    const body = document.body;
-    const isDark = body.getAttribute("data-theme") === "dark";
-    body.setAttribute("data-theme", isDark ? "light" : "dark");
-    document.getElementById("themeToggle").textContent = isDark ? "🌙" : "☀️";
-});
+const addrInput = document.getElementById("addr");
+const checkBtn = document.getElementById("check");
+const terminal = document.getElementById("terminal");
+const snapWalletEl = document.getElementById("snapWallet");
+const snapTxEl = document.getElementById("snapTx");
+const snapActiveEl = document.getElementById("snapActive");
+const copyLinkBtn = document.getElementById("copyLink");
+const openExpBtn = document.getElementById("openExplorer");
 
-// HIDE CARDS ON LOAD
-document.getElementById("snapshotCard").classList.add("hidden");
-document.getElementById("activityCard").classList.add("hidden");
+function clearTerminal() {
+    terminal.innerHTML = "";
+}
 
-// BUTTON + ENTER SUPPORT
-document.getElementById("scanBtn").addEventListener("click", runScan);
-document.getElementById("walletInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") runScan();
-});
+function shortAddr(addr) {
+    return addr.slice(0, 6) + "..." + addr.slice(-4);
+}
 
-// MAIN FUNCTION
+function appendTx(tx, wallet) {
+    const row = document.createElement("div");
+    row.className = "tx";
+
+    const isOut = tx.from?.toLowerCase() === wallet.toLowerCase();
+    const badge = isOut
+        ? `<span class="badge-out">OUT</span>`
+        : `<span class="badge-in">IN</span>`;
+
+    row.innerHTML = `
+        <div>
+            <div class="hash">${tx.hash}</div>
+            <div class="meta">${tx.from} → ${tx.to} • ${tx.value} • ${tx.time}</div>
+        </div>
+        <div class="actions">
+            ${badge}
+            <button class="btn-secondary" onclick="navigator.clipboard.writeText('${tx.hash}')">Copy</button>
+            <button class="btn-secondary" onclick="window.open('${tx.link}', '_blank')">Explorer</button>
+        </div>
+    `;
+
+    terminal.prepend(row);
+}
+
 async function runScan() {
-    const wallet = document.getElementById("walletInput").value.trim();
-    const status = document.getElementById("statusMsg");
+    const wallet = addrInput.value.trim();
 
-    if (!wallet.startsWith("0x")) {
-        status.textContent = "Invalid address.";
+    if (!wallet.startsWith("0x") || wallet.length < 40) {
+        alert("Paste a valid Arc Testnet wallet.");
         return;
     }
 
-    status.textContent = "Loading wallet activity...";
-    document.getElementById("snapshotCard").classList.add("hidden");
-    document.getElementById("activityCard").classList.add("hidden");
+    terminal.innerHTML = "<div style='color:#aaa;padding:10px;'>Scanning...</div>";
+
+    snapWalletEl.textContent = shortAddr(wallet);
+    snapTxEl.textContent = "0";
+    snapActiveEl.innerHTML = `<span class="badge-out">No</span>`;
 
     try {
-        const resp = await fetch(`/api/arc?address=${wallet}`);
-        const data = await resp.json();
+        const res = await fetch(`/api/activity?address=${wallet}`);
+        const data = await res.json();
+        const txs = data.transactions || [];
 
-        if (!data || !data.txCount) {
-            status.textContent = "No activity found.";
+        snapTxEl.textContent = txs.length;
+        snapActiveEl.innerHTML = txs.length
+            ? `<span class="badge-in">Yes</span>`
+            : `<span class="badge-out">No</span>`;
+
+        clearTerminal();
+
+        if (!txs.length) {
+            terminal.innerHTML = "<div style='color:#aaa;padding:10px;'>No transactions found.</div>";
             return;
         }
 
-        // SNAPSHOT
-        document.getElementById("walletDisplay").textContent = shorten(wallet);
-        document.getElementById("txCount").textContent = data.txCount;
-        document.getElementById("active").textContent = data.isActive ? "Yes" : "No";
-
-        // EXPLORER
-        document.getElementById("openExplorer").onclick = () =>
-            window.open(`https://testnet.arcscan.app/address/${wallet}`, "_blank");
-
-        // COPY LINK
-        document.getElementById("copyLink").onclick = async () => {
-            await navigator.clipboard.writeText(window.location.href + `?wallet=${wallet}`);
-        };
-
-        // ACTIVITY LOG
-        const log = document.getElementById("activityLog");
-        log.innerHTML = "";
-
-        data.txs.forEach(tx => {
-            const div = document.createElement("div");
-            div.className = "tx-item";
-            div.innerHTML = `
-                <strong>${tx.hash.slice(0, 12)}...</strong>
-                <span class="${tx.direction === "IN" ? "tx-in" : "tx-out"}">${tx.direction}</span>
-                • ${tx.amount} USDC • ${tx.time}
-            `;
-            log.appendChild(div);
-        });
-
-        status.textContent = "";
-        document.getElementById("snapshotCard").classList.remove("hidden");
-        document.getElementById("activityCard").classList.remove("hidden");
+        txs.forEach(tx => appendTx(tx, wallet));
 
     } catch (err) {
-        status.textContent = "Error fetching data.";
+        terminal.innerHTML = "<div style='color:#aaa;padding:10px;'>Network error.</div>";
     }
 }
 
-function shorten(addr) {
-    return addr.slice(0, 6) + "..." + addr.slice(-4);
-}
+checkBtn.onclick = runScan;
+
+copyLinkBtn.onclick = () => {
+    const url = `${location.origin}/?addr=${addrInput.value}`;
+    navigator.clipboard.writeText(url);
+    alert("Copied!");
+};
+
+openExpBtn.onclick = () => {
+    window.open(`https://testnet.arcscan.app/address/${addrInput.value}`, "_blank");
+};
