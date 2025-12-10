@@ -1,4 +1,4 @@
-// ARC Testnet USDC Integration
+// ARC Testnet USDC contract
 const USDC_CONTRACT = "0x3600000000000000000000000000000000000000";
 
 const addrInput     = document.getElementById("addr");
@@ -22,11 +22,23 @@ function formatTime(ts) {
 }
 
 function formatUSDC(raw) {
-  return (Number(raw) / 1e6).toFixed(2);
+  return (Number(raw) / 1e6).toFixed(6);
 }
 
 function clearTerminal() {
   terminal.innerHTML = "";
+}
+
+function copyTxHash(btn, hash) {
+  navigator.clipboard.writeText(hash);
+
+  btn.classList.add("btn-copied", "btn-copy-anim");
+  btn.textContent = "Copied!";
+
+  setTimeout(() => {
+    btn.classList.remove("btn-copied", "btn-copy-anim");
+    btn.textContent = "Copy";
+  }, 1000);
 }
 
 function appendTx(tx, wallet) {
@@ -61,8 +73,10 @@ function appendTx(tx, wallet) {
       <div class="tx-meta">${value} USDC • ${formatTime(tx.timeStamp)}</div>
 
       <div class="tx-actions">
-        <button class="btn-secondary" onclick="navigator.clipboard.writeText('${tx.hash}')">Copy</button>
-        <button class="btn-secondary" onclick="window.open('${link}', '_blank')">Explorer</button>
+        <button class="btn-secondary copy-btn"
+          onclick="copyTxHash(this, '${tx.hash}')">Copy</button>
+        <button class="btn-secondary"
+          onclick="window.open('${link}', '_blank')">Explorer</button>
       </div>
     </div>
   `;
