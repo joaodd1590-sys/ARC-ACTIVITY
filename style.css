@@ -37,7 +37,9 @@ body {
   font-size: 14px;
 }
 
-/* CARDS */
+/* -------------------------------------------------
+   CARD
+------------------------------------------------- */
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -46,7 +48,9 @@ body {
   margin-bottom: 18px;
 }
 
-/* INPUT */
+/* -------------------------------------------------
+   INPUTS
+------------------------------------------------- */
 .input-wrapper {
   display: flex;
   gap: 10px;
@@ -75,7 +79,9 @@ body {
   background: var(--accent-hover);
 }
 
-/* SNAPSHOT */
+/* -------------------------------------------------
+   SNAPSHOT
+------------------------------------------------- */
 .result-row {
   display: flex;
   justify-content: space-between;
@@ -100,7 +106,9 @@ body {
   font-weight: 700;
 }
 
-/* BUTTONS */
+/* -------------------------------------------------
+   BUTTONS
+------------------------------------------------- */
 .btn-secondary {
   padding: 8px 14px;
   border-radius: 8px;
@@ -114,7 +122,9 @@ body {
   background: #27334b;
 }
 
-/* TERMINAL */
+/* -------------------------------------------------
+   TERMINAL
+------------------------------------------------- */
 .terminal {
   background: #0d111c;
   border: 1px solid var(--border);
@@ -124,7 +134,7 @@ body {
   overflow-y: auto;
 }
 
-/* SCROLLBAR */
+/* Scrollbar */
 .terminal::-webkit-scrollbar {
   width: 8px;
 }
@@ -145,7 +155,9 @@ body {
   scrollbar-width: thin;
 }
 
-/* TRANSACTION CARD */
+/* -------------------------------------------------
+   TRANSACTION CARD
+------------------------------------------------- */
 .tx {
   padding: 14px;
   margin-bottom: 12px;
@@ -176,7 +188,6 @@ body {
   font-weight: 600;
   word-break: break-all;
   overflow-wrap: anywhere;
-  white-space: normal;
 }
 
 /* BADGES */
@@ -208,8 +219,7 @@ body {
   margin-left: 6px;
 }
 
-/* ------- COPY ANIMATION -------- */
-
+/* Copy animation */
 .btn-copied {
   background: #2ecc71 !important;
   color: #000 !important;
@@ -227,7 +237,9 @@ body {
   100% { transform: scale(1); }
 }
 
-/* RESPONSIVE */
+/* -------------------------------------------------
+   RESPONSIVE
+------------------------------------------------- */
 @media (max-width: 520px) {
 
   .tx-top {
@@ -254,4 +266,34 @@ body {
   #check {
     width: 100%;
   }
+}
+
+/* -------------------------------------------------
+   FOOTER (PROFISSIONAL — IGUAL ARC GAS)
+------------------------------------------------- */
+.app-footer {
+  margin-top: 50px;
+  padding: 30px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.footer-icons {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.footer-icons a {
+  color: var(--text-muted);
+  transition: 0.2s ease;
+  text-decoration: none;
+}
+
+.footer-icons a:hover {
+  color: var(--accent);
+  transform: scale(1.15);
 }
