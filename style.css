@@ -1,3 +1,14 @@
+/* ==================================================
+   ARC / Activity Tracker - Final CSS (complete)
+   - Header centered
+   - Footer always available (desktop + mobile)
+   - GitHub / X icons styled (use <a> with classes or SVG inside)
+   - Preserves dark theme variables (light mode vars kept but not forced)
+   ================================================== */
+
+/* ---------------------------
+   THEME VARIABLES
+   --------------------------- */
 :root {
   --bg: #0b0f1a;
   --card: #111623;
@@ -6,255 +17,197 @@
   --accent-hover: #4ab3ff;
   --text-main: #ffffff;
   --text-muted: #9ba3b5;
+  --success: #2ecc71;
+  --rounded-lg: 14px;
+  --container-width: 900px;
 }
 
+/* Light mode variables are preserved but optional */
+body.light {
+  --bg: #f4f6fb;
+  --card: #ffffff;
+  --border: #cdd5e0;
+  --accent: #1d9bf0;
+  --accent-hover: #0078d4;
+  --text-main: #0b1020;
+  --text-muted: #444;
+}
+
+/* ---------------------------
+   BASE
+   --------------------------- */
+* { box-sizing: border-box; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+html,body { height:100%; }
 body {
   margin: 0;
   padding: 0;
   background: var(--bg);
   color: var(--text-main);
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  line-height: 1.4;
 }
 
-.hidden {
-  display: none;
-}
+/* Utility */
+.hidden { display:none !important; }
 
+/* Page shell */
 .app-shell {
-  max-width: 780px;
-  margin: 30px auto;
-  padding: 0 16px;
+  max-width: var(--container-width);
+  margin: 28px auto;
+  padding: 0 20px 40px;
 }
 
+/* ---------------------------
+   HEADER (CENTERED)
+   --------------------------- */
 .app-header {
+  /* center for both desktop and mobile */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 22px;
   text-align: center;
-  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 0.03em;
+  font-weight: 800;
 }
 
 .subtitle {
+  margin: 0;
   color: var(--text-muted);
-  margin-top: 6px;
-  font-size: 14px;
+  font-size: 13px;
 }
 
-/* CARDS */
+/* ---------------------------
+   CARD
+   --------------------------- */
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-  margin-bottom: 18px;
+  border-radius: var(--rounded-lg);
+  padding: 18px;
+  margin-top: 22px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.45);
 }
 
-/* INPUT */
-.input-wrapper {
-  display: flex;
-  gap: 10px;
+/* small visual tweak for light mode cards */
+body.light .card {
+  background: #ffffff;
+  border-color: var(--border);
 }
 
-#addr {
-  flex: 1;
-  padding: 12px;
+/* ---------------------------
+   FORM FIELDS / INPUTS
+   --------------------------- */
+.field { margin-top: 14px; }
+
+.field label {
+  display:block;
+  margin-bottom:6px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.field input,
+textarea,
+select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 50px;
+  border: 1px solid var(--border);
   background: #161d2e;
   color: var(--text-main);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  font-size: 15px;
+  transition: border-color .12s ease, box-shadow .12s ease;
 }
 
-#check {
-  padding: 12px 18px;
+body.light .field input {
+  background: #f2f4f7;
+  color: #0b1020;
+  border-color: #cdd5e0;
+}
+
+/* remove default browser focus ring and replace with subtle border change */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: var(--accent);
+}
+
+/* disable mobile tap highlight */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* ---------------------------
+   BUTTONS
+   --------------------------- */
+.btn-primary,
+.btn-secondary {
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  font-weight: 700;
+  transition: transform .06s ease, box-shadow .16s ease, background .12s ease;
+}
+
+.btn-primary {
+  width: 100%;
   background: var(--accent);
   color: #000;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  border: none;
+  box-shadow: 0 8px 28px rgba(29,155,240,0.30);
+  margin-top: 18px;
 }
 
-#check:hover {
-  background: var(--accent-hover);
-}
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
-/* SNAPSHOT */
-.result-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px dashed var(--border);
-}
-
-.snapshot-actions {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
-}
-
-/* ACTIVE COLORS */
-.active-yes {
-  color: #2ecc71;
-  font-weight: 700;
-}
-
-.active-no {
-  color: #ff4d4d;
-  font-weight: 700;
-}
-
-/* BUTTONS */
 .btn-secondary {
-  padding: 8px 14px;
-  border-radius: 8px;
-  background: #1b2333;
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  cursor: pointer;
+  background:#1b2333;
+  color:var(--text-main);
+  border:1px solid var(--border);
 }
 
-.btn-secondary:hover {
-  background: #27334b;
-}
+/* subtle active state */
+.btn-primary:active, .btn-secondary:active { transform: translateY(0); }
 
-/* TERMINAL */
-.terminal {
-  background: #0d111c;
-  border: 1px solid var(--border);
-  padding: 15px;
-  border-radius: 10px;
-  max-height: 460px;
-  overflow-y: auto;
+/* chip style presets */
+.preset-buttons { display:flex; gap:8px; flex-wrap:wrap; }
+.btn-chip {
+  padding:6px 12px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text-muted);
+  font-size:13px;
+  cursor:pointer;
 }
+.btn-chip.active { background:var(--accent); color:#000; }
 
-/* SCROLLBAR */
-.terminal::-webkit-scrollbar {
-  width: 8px;
-}
-.terminal::-webkit-scrollbar-track {
-  background: #0b0f1a;
-  border-radius: 10px;
-}
-.terminal::-webkit-scrollbar-thumb {
-  background: #1d9bf0;
-  border-radius: 10px;
-}
-.terminal::-webkit-scrollbar-thumb:hover {
-  background: #4ab3ff;
-}
-
-.terminal {
-  scrollbar-color: #1d9bf0 #0b0f1a;
-  scrollbar-width: thin;
-}
-
-/* TRANSACTION CARD */
-.tx {
-  padding: 14px;
-  margin-bottom: 12px;
-  background: #131a2c;
-  border-radius: 10px;
+/* ---------------------------
+   RESULT CARD (summary)
+   --------------------------- */
+.result-card {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #0d1320;
   border: 1px solid var(--border);
 }
+body.light .result-card { background:#f6f7fa; }
 
-.tx-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+/* grid small */
+.result-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:12px; }
 
-.addresses {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.addr-label {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.addr-value {
-  font-size: 13px;
-  font-weight: 600;
-  word-break: break-all;
-  overflow-wrap: anywhere;
-  white-space: normal;
-}
-
-/* BADGES */
-.badge-in, .badge-out {
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-weight: 800;
-  font-size: 12px;
-}
-
-.badge-in {
-  background: #2ecc71;
-  color: #000;
-}
-
-.badge-out {
-  background: #ff4d4d;
-  color: #fff;
-}
-
-.tx-bottom {
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tx-actions button {
-  margin-left: 6px;
-}
-
-/* ------- COPY ANIMATION -------- */
-
-.btn-copied {
-  background: #2ecc71 !important;
-  color: #000 !important;
-  transform: scale(1.05);
-  transition: all 0.25s ease;
-}
-
-.btn-copy-anim {
-  animation: pop 0.25s ease;
-}
-
-@keyframes pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
-
-/* RESPONSIVE */
-@media (max-width: 520px) {
-
-  .tx-top {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .tx-bottom {
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-  }
-
-  .addr-value {
-    font-size: 12px;
-    line-height: 1.3;
-  }
-
-  .input-wrapper {
-    flex-direction: column;
-  }
-
-  #check {
-    width: 100%;
-  }
-  /* FOOTER — same style as ARC Gas Estimator */
+/* ---------------------------
+   FOOTER (ALWAYS OUTSIDE MEDIA QUERIES)
+   --------------------------- */
 .app-footer {
   margin-top: 40px;
   padding: 26px 0;
@@ -263,23 +216,136 @@ body {
   color: var(--text-muted);
 }
 
+/* footer icons row */
 .footer-icons {
   display: flex;
   justify-content: center;
-  gap: 28px;
-  margin-bottom: 12px;
-  font-size: 22px;
+  gap: 22px;
+  margin-bottom: 10px;
+  align-items: center;
 }
 
+/* each footer link (GitHub / X) */
 .footer-icons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: transparent;
   color: var(--text-muted);
   text-decoration: none;
-  transition: 0.2s ease;
+  transition: transform .12s ease, color .12s ease, background .12s ease;
+  font-size: 18px; /* fallback if using icon fonts */
 }
 
+/* when icons are plain text/emojis, keep proper size */
+.footer-icons a > svg,
+.footer-icons a img {
+  width: 20px;
+  height: 20px;
+  display:block;
+}
+
+/* hover states for footer icons */
 .footer-icons a:hover {
   color: var(--accent);
-  transform: scale(1.15);
+  transform: translateY(-3px) scale(1.03);
 }
 
+/* small label under icons */
+.footer-credit {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 6px;
+}
 
+/* ---------------------------
+   ICON HELPERS (for HTML: add classes .icon-github / .icon-x on <a>)
+   --------------------------- */
+/* Github icon wrapper */
+.footer-icons a.icon-github {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.02);
+  color: var(--text-muted);
+}
+
+/* X (Twitter) icon wrapper */
+.footer-icons a.icon-x {
+  background: rgba(29,155,240,0.06);
+  border: 1px solid rgba(29,155,240,0.06);
+  color: var(--text-muted);
+}
+
+/* On hover make them more visible */
+.footer-icons a.icon-github:hover { color: var(--text-main); background: rgba(255,255,255,0.03); }
+.footer-icons a.icon-x:hover { color: var(--text-main); background: rgba(29,155,240,0.12); }
+
+/* If you want text label next to icons, small helper */
+.footer-icons .icon-label {
+  font-size: 13px;
+  margin-left: 8px;
+  color: var(--text-muted);
+}
+
+/* ---------------------------
+   TRANSACTION / ACTIVITY SPECIFIC (ARC ACTIVITY)
+   --------------------------- */
+.terminal {
+  background: #0d1118;
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: 12px;
+  max-height: 520px;
+  overflow-y:auto;
+}
+
+/* tx card */
+.tx {
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #131a2c;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.tx-top { display:flex; justify-content:space-between; gap:12px; align-items:center; }
+.addresses { display:flex; flex-direction:column; gap:4px; }
+.addr-label { font-size:11px; color:var(--text-muted); }
+.addr-value { font-size:13px; font-weight:600; word-break:break-all; white-space:normal; }
+
+/* badges */
+.badge-in { padding:4px 10px; border-radius:8px; background:#2ecc71; color:#000; font-weight:700; }
+.badge-out { padding:4px 10px; border-radius:8px; background:#ff4d4d; color:#fff; font-weight:700; }
+
+/* ---------------------------
+   COPY FEEDBACK (button state)
+   --------------------------- */
+.btn-copied { background: var(--success) !important; color: #000 !important; transform: scale(1.03); }
+.btn-copy-anim { animation: pop .22s ease; }
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* ---------------------------
+   SMALL SCREENS / MOBILE
+   --------------------------- */
+@media (max-width: 720px) {
+  .app-shell { padding: 0 16px 40px; }
+  .result-grid { grid-template-columns: 1fr; }
+  .card { padding: 16px; border-radius: 12px; }
+  .btn-primary { padding: 14px 12px; }
+  .footer-icons { gap: 16px; }
+}
+
+/* further compact mobile */
+@media (max-width: 520px) {
+  .app-header h1 { font-size: 24px; }
+  .subtitle { font-size: 12px; }
+  .footer-icons a { width: 34px; height:34px; font-size:16px; }
+  .card { padding: 18px; border-radius: 16px; }
+}
