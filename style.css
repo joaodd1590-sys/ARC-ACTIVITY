@@ -302,5 +302,13 @@ body {
     text-align: center;
   }
 }
+/* ================= NETWORK BACKGROUND ================= */
+
+#bg-network {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
 
 
