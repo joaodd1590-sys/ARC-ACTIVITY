@@ -302,17 +302,29 @@ body {
     text-align: center;
   }
 }
-.app-shell {
-  position: relative;
+/* ================= ANIMATED BACKGROUND ================= */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+
+  background:
+    radial-gradient(800px at 20% 10%, rgba(29, 155, 240, 0.12), transparent 60%),
+    radial-gradient(600px at 80% 20%, rgba(56, 189, 248, 0.10), transparent 60%),
+    radial-gradient(700px at 50% 80%, rgba(14, 165, 233, 0.08), transparent 60%);
+
+  animation: bgFloat 18s ease-in-out infinite alternate;
 }
 
-.app-shell::before {
-  content: "";
-  position: absolute;
-  inset: -80px;
-  background:
-    radial-gradient(circle at top, rgba(29, 155, 240, 0.12), transparent 70%);
-  z-index: -1;
+@keyframes bgFloat {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  100% {
+    transform: translateY(-40px) translateX(30px);
+  }
 }
 
 
