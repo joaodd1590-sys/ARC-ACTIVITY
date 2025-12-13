@@ -269,12 +269,36 @@ body {
 ================================================== */
 
 .app-header .subtitle {
-  margin-top: 15px;     /* espaço entre título e subtítulo */
-  margin-bottom: 50px; /* espaço entre subtítulo e input */
+  margin-top: 15px;     
+  margin-bottom: 50px; 
   line-height: 1.6;
 }
 .app-footer {
   border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+/* ================= MOBILE HEADER FIX ================= */
+
+@media (max-width: 520px) {
+  .header-title {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .header-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-header h1 {
+    text-align: center;
+    line-height: 1.15;
+  }
+
+  .subtitle {
+    margin-top: 12px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
 }
 
 
