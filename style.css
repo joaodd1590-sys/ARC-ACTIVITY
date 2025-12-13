@@ -184,8 +184,8 @@ body {
 ================================================== */
 
 .app-header .subtitle {
-  margin-top: 14px;     /* espaço entre título e subtítulo */
-  margin-bottom: 22px; /* espaço entre subtítulo e input */
+  margin-top: 15px;     /* espaço entre título e subtítulo */
+  margin-bottom: 30px; /* espaço entre subtítulo e input */
   line-height: 1.6;
 }
 .app-footer {
