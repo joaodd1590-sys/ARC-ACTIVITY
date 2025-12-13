@@ -336,5 +336,17 @@ body::before {
     transform: translate(0, 0);
   }
 }
+.app-shell {
+  position: relative;
+}
+
+.app-shell::before {
+  content: "";
+  position: absolute;
+  inset: -80px;
+  background:
+    radial-gradient(circle at top, rgba(29, 155, 240, 0.12), transparent 70%);
+  z-index: -1;
+}
 
 
