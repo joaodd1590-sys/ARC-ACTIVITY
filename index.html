@@ -22,48 +22,49 @@
 
       <div class="header-hero">
         <h1>ARC Activity Tracker</h1>
-        <p class="subtitle">
-          🔍 Community scanner — shows live activity on ARC Testnet
-        </p>
+        <p class="subtitle">🔍 Community scanner — shows live activity on ARC Testnet</p>
       </div>
     </header>
 
     <!-- INPUT -->
     <section class="input-card">
-      <input id="walletInput" type="text" placeholder="Paste ARC wallet (0x...)"/>
-      <button id="scanBtn">Scan</button>
+      <input id="addr" type="text" placeholder="Paste ARC wallet (0x...)"/>
+      <button id="check">Scan</button>
+    </section>
+
+    <!-- SNAPSHOT -->
+    <section class="snapshot">
+      <div>Wallet<br><strong id="snapWallet">-</strong></div>
+      <div>Transactions<br><strong id="snapTx">-</strong></div>
+      <div>Active<br><strong id="snapActive">-</strong></div>
     </section>
 
     <!-- FILTER -->
-    <section class="filter-bar hidden" id="filterBar">
+    <div class="tx-filter hidden" id="txFilter">
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="in">IN</button>
       <button class="filter-btn" data-filter="out">OUT</button>
-    </section>
+    </div>
 
     <!-- RESULTS -->
-    <section id="results" class="results"></section>
+    <div id="resultsContainer"></div>
+    <div id="terminal"></div>
 
     <!-- FOOTER -->
     <footer class="app-footer">
       <div class="footer-icons">
         <a href="https://github.com/joaodd1590-sys/ARC-ACTIVITY" target="_blank" aria-label="GitHub">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0.297C5.373 0.297 0 5.67 0 12.297c0 5.286 3.438 9.772 8.205 11.36.6.111.82-.261.82-.579
-            0-.285-.011-1.04-.017-2.04-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.084-.73.084-.73
-            1.205.084 1.84 1.237 1.84 1.237 1.07 1.834 2.807 1.304 3.492.997"/>
+            <path d="M12 0.297C5.373 0.297 0 5.67 0 12.297c0 5.286 3.438 9.772 8.205 11.36"/>
           </svg>
         </a>
-
         <a href="https://x.com/cj54475427" target="_blank" aria-label="X">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M18.244 2H21.5l-7.48 8.568L23.5 22h-6.843l-5.373-6.51L5.5
-            22H2.245l7.937-9.09L1.5 2h6.976l4.843 5.833L18.244 2z"/>
+            <path d="M18.244 2H21.5l-7.48 8.568L23.5 22h-6.843"/>
           </svg>
         </a>
       </div>
-
-      <div>Built by João Carlos · ARC Ecosystem Community 💙</div>
+      <div>Built by João Carlos · Arc Ecosystem Community 💙</div>
       <div>© 2025 ARC Activity Tracker. All rights reserved.</div>
     </footer>
 
