@@ -16,9 +16,7 @@ body {
   font-family: system-ui, sans-serif;
 }
 
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
 .app-shell {
   max-width: 780px;
@@ -26,9 +24,30 @@ body {
   padding: 0 16px;
 }
 
+/* ================= HEADER ================= */
+
 .app-header {
   text-align: center;
   margin-bottom: 20px;
+}
+
+.header-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px var(--border),
+              0 8px 22px rgba(29, 155, 240, 0.35);
+}
+
+.app-header h1 {
+  margin: 0;
+  line-height: 1;
 }
 
 .subtitle {
@@ -37,9 +56,8 @@ body {
   font-size: 14px;
 }
 
-/* -------------------------------------------------
-   CARD
-------------------------------------------------- */
+/* ================= CARD ================= */
+
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -48,9 +66,8 @@ body {
   margin-bottom: 18px;
 }
 
-/* -------------------------------------------------
-   INPUTS
-------------------------------------------------- */
+/* ================= INPUT ================= */
+
 .input-wrapper {
   display: flex;
   gap: 10px;
@@ -75,13 +92,10 @@ body {
   border: none;
 }
 
-#check:hover {
-  background: var(--accent-hover);
-}
+#check:hover { background: var(--accent-hover); }
 
-/* -------------------------------------------------
-   SNAPSHOT
-------------------------------------------------- */
+/* ================= SNAPSHOT ================= */
+
 .result-row {
   display: flex;
   justify-content: space-between;
@@ -95,20 +109,11 @@ body {
   gap: 10px;
 }
 
-/* ACTIVE COLORS */
-.active-yes {
-  color: #2ecc71;
-  font-weight: 700;
-}
+.active-yes { color: #2ecc71; font-weight: 700; }
+.active-no { color: #ff4d4d; font-weight: 700; }
 
-.active-no {
-  color: #ff4d4d;
-  font-weight: 700;
-}
+/* ================= BUTTONS ================= */
 
-/* -------------------------------------------------
-   BUTTONS
-------------------------------------------------- */
 .btn-secondary {
   padding: 8px 14px;
   border-radius: 8px;
@@ -118,13 +123,10 @@ body {
   cursor: pointer;
 }
 
-.btn-secondary:hover {
-  background: #27334b;
-}
+.btn-secondary:hover { background: #27334b; }
 
-/* -------------------------------------------------
-   TERMINAL
-------------------------------------------------- */
+/* ================= TERMINAL ================= */
+
 .terminal {
   background: #0d111c;
   border: 1px solid var(--border);
@@ -134,143 +136,8 @@ body {
   overflow-y: auto;
 }
 
-/* Scrollbar */
-.terminal::-webkit-scrollbar {
-  width: 8px;
-}
-.terminal::-webkit-scrollbar-track {
-  background: #0b0f1a;
-  border-radius: 10px;
-}
-.terminal::-webkit-scrollbar-thumb {
-  background: #1d9bf0;
-  border-radius: 10px;
-}
-.terminal::-webkit-scrollbar-thumb:hover {
-  background: #4ab3ff;
-}
+/* ================= FOOTER ================= */
 
-.terminal {
-  scrollbar-color: #1d9bf0 #0b0f1a;
-  scrollbar-width: thin;
-}
-
-/* -------------------------------------------------
-   TRANSACTION CARD
-------------------------------------------------- */
-.tx {
-  padding: 14px;
-  margin-bottom: 12px;
-  background: #131a2c;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-}
-
-.tx-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.addresses {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.addr-label {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.addr-value {
-  font-size: 13px;
-  font-weight: 600;
-  word-break: break-all;
-  overflow-wrap: anywhere;
-}
-
-/* BADGES */
-.badge-in, .badge-out {
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-weight: 800;
-  font-size: 12px;
-}
-
-.badge-in {
-  background: #2ecc71;
-  color: #000;
-}
-
-.badge-out {
-  background: #ff4d4d;
-  color: #fff;
-}
-
-.tx-bottom {
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tx-actions button {
-  margin-left: 6px;
-}
-
-/* Copy animation */
-.btn-copied {
-  background: #2ecc71 !important;
-  color: #000 !important;
-  transform: scale(1.05);
-  transition: all 0.25s ease;
-}
-
-.btn-copy-anim {
-  animation: pop 0.25s ease;
-}
-
-@keyframes pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
-
-/* -------------------------------------------------
-   RESPONSIVE
-------------------------------------------------- */
-@media (max-width: 520px) {
-
-  .tx-top {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .tx-bottom {
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-  }
-
-  .addr-value {
-    font-size: 12px;
-    line-height: 1.3;
-  }
-
-  .input-wrapper {
-    flex-direction: column;
-  }
-
-  #check {
-    width: 100%;
-  }
-}
-
-/* -------------------------------------------------
-   FOOTER (Profissional – SVG Icons)
-------------------------------------------------- */
 .app-footer {
   margin-top: 40px;
   padding: 28px 0;
@@ -296,3 +163,19 @@ body {
   transform: scale(1.15);
 }
 
+/* ================= MOBILE ================= */
+
+@media (max-width: 520px) {
+  .header-logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .input-wrapper {
+    flex-direction: column;
+  }
+
+  #check {
+    width: 100%;
+  }
+}
