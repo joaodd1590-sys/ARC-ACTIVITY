@@ -280,18 +280,20 @@ body {
 
 @media (max-width: 520px) {
   .header-title {
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;         
+    align-items: center;       
+    justify-content: center;     
+    gap: 10px;                 
   }
 
   .header-logo {
-    width: 40px;
-    height: 40px;
+    width: 36px;                 
+    height: 36px;
   }
 
   .app-header h1 {
     text-align: center;
-    line-height: 1.15;
+    font-size: 24px;              
   }
 
   .subtitle {
@@ -300,5 +302,4 @@ body {
     text-align: center;
   }
 }
-
 
