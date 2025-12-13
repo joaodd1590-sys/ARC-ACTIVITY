@@ -1,8 +1,3 @@
-if (window.innerWidth < 768) {
-  canvas.style.display = "none";
-  return;
-}
-
 const canvas = document.getElementById("bg-network");
 const ctx = canvas.getContext("2d");
 
