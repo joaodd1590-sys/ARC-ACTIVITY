@@ -23,8 +23,7 @@ body {
 /* HEADER */
 
 .top-bar {
-  display: flex;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .brand {
@@ -47,7 +46,7 @@ body {
 
 .header-hero {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
 }
 
 .header-hero h1 {
@@ -73,16 +72,16 @@ body {
 
 .input-card input {
   flex: 1;
-  border-radius: 999px;
   padding: 10px 14px;
+  border-radius: 999px;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text);
 }
 
 .input-card button {
-  border-radius: 999px;
   padding: 10px 20px;
+  border-radius: 999px;
   border: none;
   background: var(--accent);
   color: #fff;
@@ -90,12 +89,23 @@ body {
   cursor: pointer;
 }
 
+/* SNAPSHOT */
+
+.snapshot {
+  display: flex;
+  justify-content: space-between;
+  margin: 16px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 /* FILTER */
 
-.filter-bar {
+.tx-filter {
   display: flex;
   gap: 10px;
-  margin: 16px 0;
+  margin: 14px 0;
 }
 
 .filter-btn {
@@ -105,6 +115,7 @@ body {
   background: transparent;
   color: var(--muted);
   cursor: pointer;
+  font-size: 12px;
 }
 
 .filter-btn.active {
@@ -112,26 +123,9 @@ body {
   color: #fff;
 }
 
-/* RESULTS */
-
-.results {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.hidden {
+  display: none;
 }
-
-.tx {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 12px;
-  border: 1px solid var(--border);
-  font-size: 13px;
-}
-
-.tx.in { border-left: 3px solid #22c55e; }
-.tx.out { border-left: 3px solid #ef4444; }
-
-.hidden { display: none; }
 
 /* FOOTER */
 
@@ -147,8 +141,4 @@ body {
   justify-content: center;
   gap: 28px;
   margin-bottom: 10px;
-}
-
-.footer-icons svg {
-  fill: var(--muted);
 }
