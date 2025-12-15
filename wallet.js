@@ -65,13 +65,11 @@ function appendTx(tx, wallet) {
           <div class="addr-value">${tx.to}</div>
         </div>
       </div>
-
       <div>${badge}</div>
     </div>
 
     <div class="tx-bottom">
       <div class="tx-meta">${value} USDC • ${formatTime(tx.timeStamp)}</div>
-
       <div class="tx-actions">
         <button class="btn-secondary copy-btn"
           onclick="copyTxHash(this, '${tx.hash}')">Copy</button>
@@ -85,24 +83,78 @@ function appendTx(tx, wallet) {
 }
 
 async function runScan() {
-  const wallet = addrInput.value.trim();
+  const wallet = addrInput.value.trim().toLowerCase();
 
-  if (!wallet.startsWith("0x") || wallet.length < 42) {
+  // =========================
+  // BASIC VALIDATION
+  // =========================
+  if (!wallet.startsWith("0x") || wallet.length !== 42) {
     alert("Endereço inválido.");
     return;
   }
 
+  // =========================
+  // BLOCK KNOWN TOKEN
+  // =========================
+  if (wallet === USDC_CONTRACT.toLowerCase()) {
+    terminal.innerHTML =
+      "<div style='color:#ff4d4d;font-weight:700;'>Este endereço é o contrato do USDC, não uma wallet.</div>";
+    resultsContainer.classList.add("hidden");
+    return;
+  }
+
   resultsContainer.classList.add("hidden");
-  terminal.innerHTML = "<div style='color:#aaa;'>Carregando...</div>";
+  terminal.innerHTML =
+    "<div style='color:#aaa;'>Verificando tipo de endereço…</div>";
 
   snapWalletEl.textContent = shortAddr(wallet);
   snapTxEl.textContent = "0";
   snapActiveEl.innerHTML = `<span class="active-no">No</span>`;
 
   try {
+    // =========================
+    // STEP 1 — CHECK NORMAL TXs
+    // =========================
+    const txlistRes = await fetch(
+      `https://testnet.arcscan.app/api?module=account&action=txlist&address=${wallet}&sort=desc`
+    );
+    const txlistData = await txlistRes.json();
+
+    let hasNormalTxs =
+      txlistData.status === "1" &&
+      Array.isArray(txlistData.result) &&
+      txlistData.result.length > 0;
+
+    // =========================
+    // STEP 2 — TOKEN CONTRACT CHECK
+    // =========================
+    if (!hasNormalTxs) {
+      const tokenRes = await fetch(
+        `https://testnet.arcscan.app/api?module=token&action=tokeninfo&contractaddress=${wallet}`
+      );
+      const tokenData = await tokenRes.json();
+
+      if (
+        tokenData.status === "1" &&
+        tokenData.result &&
+        tokenData.result.tokenName
+      ) {
+        terminal.innerHTML =
+          "<div style='color:#ff4d4d;font-weight:700;'>Este endereço pertence a um contrato de token, não a uma wallet.</div>";
+        resultsContainer.classList.add("hidden");
+        return;
+      }
+    }
+
+    // =========================
+    // STEP 3 — FETCH USDC TXs
+    // =========================
+    terminal.innerHTML =
+      "<div style='color:#aaa;'>Carregando transações USDC…</div>";
+
     const url =
       `https://testnet.arcscan.app/api?module=account&action=tokentx` +
-      `&contractaddress=${USDC_CONTRACT}&address=${wallet}`;
+      `&contractaddress=${USDC_CONTRACT}&address=${wallet}&sort=desc`;
 
     const res = await fetch(url);
     const data = await res.json();
@@ -110,27 +162,27 @@ async function runScan() {
 
     clearTerminal();
 
-    txs.sort((a, b) => Number(a.timeStamp) - Number(b.timeStamp));
-
-    snapTxEl.textContent = txs.length;
-    snapActiveEl.innerHTML = txs.length
-      ? `<span class="active-yes">Yes</span>`
-      : `<span class="active-no">No</span>`;
-
     if (!txs.length) {
       terminal.innerHTML =
-        "<div style='color:#aaa;'>Nenhuma transação USDC encontrada.</div>";
+        "<div style='color:#aaa;'>Nenhuma transação USDC encontrada. Wallet inativa.</div>";
+      snapTxEl.textContent = "0";
+      snapActiveEl.innerHTML = `<span class="active-no">No</span>`;
       resultsContainer.classList.remove("hidden");
       return;
     }
 
-    txs.forEach(tx => appendTx(tx, wallet));
+    txs.sort((a, b) => Number(b.timeStamp) - Number(a.timeStamp));
 
+    snapTxEl.textContent = txs.length;
+    snapActiveEl.innerHTML = `<span class="active-yes">Yes</span>`;
+
+    txs.forEach(tx => appendTx(tx, wallet));
     resultsContainer.classList.remove("hidden");
 
   } catch (err) {
+    console.error(err);
     terminal.innerHTML =
-      "<div style='color:#aaa;'>Erro ao conectar à API.</div>";
+      "<div style='color:#aaa;'>Erro ao conectar à API do ArcScan.</div>";
   }
 }
 
@@ -152,5 +204,3 @@ openExpBtn.onclick = () => {
   const wallet = addrInput.value.trim();
   window.open(`https://testnet.arcscan.app/address/${wallet}`, "_blank");
 };
-
-
