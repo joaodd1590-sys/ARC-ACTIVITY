@@ -17,29 +17,25 @@ export default async function handler(req, res) {
     }
 
     // =========================
-    // TOKEN CONTRACT DETECTION
+    // TOKEN METADATA CHECK
     // =========================
+    let isTokenContract = false;
+
     try {
       const tokenCheckRes = await fetch(
         `https://testnet.arcscan.app/api?module=token&action=tokeninfo&contractaddress=${address}`
       );
-
       const tokenJson = await tokenCheckRes.json();
 
-      // Se houver metadata → é contrato de token
       if (
         tokenJson &&
         Array.isArray(tokenJson.result) &&
         tokenJson.result.length > 0
       ) {
-        return res.status(400).json({
-          error: "Address is a token contract, not a wallet"
-        });
+        isTokenContract = true;
       }
     } catch (err) {
-      // Fail-safe: se o endpoint de token cair,
-      // seguimos como wallet para não quebrar o app
-      console.warn("Token check failed, continuing as wallet");
+      console.warn("Token check failed, continuing safely");
     }
 
     // =========================
@@ -50,8 +46,21 @@ export default async function handler(req, res) {
     );
 
     const txJson = await txRes.json();
+    const hasTxs =
+      txJson &&
+      Array.isArray(txJson.result) &&
+      txJson.result.length > 0;
 
-    if (!txJson || !Array.isArray(txJson.result)) {
+    // =========================
+    // FINAL DECISION
+    // =========================
+    if (isTokenContract && !hasTxs) {
+      return res.status(400).json({
+        error: "Address is a token contract, not a wallet"
+      });
+    }
+
+    if (!hasTxs) {
       return res.status(200).json({
         address,
         total: 0,
@@ -59,10 +68,10 @@ export default async function handler(req, res) {
       });
     }
 
+    // =========================
+    // FORMAT TRANSACTIONS
+    // =========================
     const transactions = txJson.result.map(tx => {
-      // =========================
-      // VALUE
-      // =========================
       let rawValue = tx.value || "0";
       if (rawValue.startsWith("0x")) {
         rawValue = BigInt(rawValue).toString();
@@ -71,17 +80,11 @@ export default async function handler(req, res) {
       const valueWei = BigInt(rawValue);
       const valueArc = Number(valueWei) / 1e18;
 
-      // =========================
-      // GAS
-      // =========================
       const gasUsed = BigInt(tx.gasUsed || "0");
       const gasPrice = BigInt(tx.gasPrice || "0");
       const gasWei = gasUsed * gasPrice;
       const gasArc = Number(gasWei) / 1e18;
 
-      // =========================
-      // TOTAL
-      // =========================
       const totalArc = valueArc + gasArc;
 
       return {
