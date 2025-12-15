@@ -1,17 +1,17 @@
-// ARC Testnet USDC contract
+// ARC Testnet USDC contract (known token)
 const USDC_CONTRACT = "0x3600000000000000000000000000000000000000";
 
-const addrInput     = document.getElementById("addr");
-const checkBtn      = document.getElementById("check");
-const terminal      = document.getElementById("terminal");
+const addrInput = document.getElementById("addr");
+const checkBtn = document.getElementById("check");
+const terminal = document.getElementById("terminal");
 const resultsContainer = document.getElementById("resultsContainer");
 
-const snapWalletEl  = document.getElementById("snapWallet");
-const snapTxEl      = document.getElementById("snapTx");
-const snapActiveEl  = document.getElementById("snapActive");
+const snapWalletEl = document.getElementById("snapWallet");
+const snapTxEl = document.getElementById("snapTx");
+const snapActiveEl = document.getElementById("snapActive");
 
-const copyLinkBtn   = document.getElementById("copyLink");
-const openExpBtn    = document.getElementById("openExplorer");
+const copyLinkBtn = document.getElementById("copyLink");
+const openExpBtn = document.getElementById("openExplorer");
 
 function shortAddr(a) {
   return a.slice(0, 6) + "..." + a.slice(-4);
@@ -31,14 +31,8 @@ function clearTerminal() {
 
 function copyTxHash(btn, hash) {
   navigator.clipboard.writeText(hash);
-
-  btn.classList.add("btn-copied", "btn-copy-anim");
   btn.textContent = "Copied!";
-
-  setTimeout(() => {
-    btn.classList.remove("btn-copied", "btn-copy-anim");
-    btn.textContent = "Copy";
-  }, 1000);
+  setTimeout(() => (btn.textContent = "Copy"), 1000);
 }
 
 function appendTx(tx, wallet) {
@@ -56,25 +50,16 @@ function appendTx(tx, wallet) {
   row.innerHTML = `
     <div class="tx-top">
       <div class="addresses">
-        <div>
-          <div class="addr-label">From</div>
-          <div class="addr-value">${tx.from}</div>
-        </div>
-        <div>
-          <div class="addr-label">To</div>
-          <div class="addr-value">${tx.to}</div>
-        </div>
+        <div><div class="addr-label">From</div><div class="addr-value">${tx.from}</div></div>
+        <div><div class="addr-label">To</div><div class="addr-value">${tx.to}</div></div>
       </div>
       <div>${badge}</div>
     </div>
-
     <div class="tx-bottom">
       <div class="tx-meta">${value} USDC • ${formatTime(tx.timeStamp)}</div>
       <div class="tx-actions">
-        <button class="btn-secondary copy-btn"
-          onclick="copyTxHash(this, '${tx.hash}')">Copy</button>
-        <button class="btn-secondary"
-          onclick="window.open('${link}', '_blank')">Explorer</button>
+        <button onclick="copyTxHash(this,'${tx.hash}')">Copy</button>
+        <button onclick="window.open('${link}','_blank')">Explorer</button>
       </div>
     </div>
   `;
@@ -98,37 +83,42 @@ async function runScan() {
   // =========================
   if (wallet === USDC_CONTRACT.toLowerCase()) {
     terminal.innerHTML =
-      "<div style='color:#ff4d4d;font-weight:700;'>Este endereço é o contrato do USDC, não uma wallet.</div>";
+      "<div style='color:#ff4d4d;font-weight:700;'>Este endereço é um contrato de token (USDC), não uma wallet.</div>";
     resultsContainer.classList.add("hidden");
     return;
   }
 
-  resultsContainer.classList.add("hidden");
   terminal.innerHTML =
-    "<div style='color:#aaa;'>Verificando tipo de endereço…</div>";
+    "<div style='color:#aaa;'>Analisando endereço (heurística Testnet)…</div>";
+  resultsContainer.classList.add("hidden");
 
   snapWalletEl.textContent = shortAddr(wallet);
   snapTxEl.textContent = "0";
   snapActiveEl.innerHTML = `<span class="active-no">No</span>`;
 
+  let addressType = "unknown";
+
   try {
     // =========================
-    // STEP 1 — CHECK NORMAL TXs
+    // STEP 1 — NORMAL TX CHECK
     // =========================
     const txlistRes = await fetch(
       `https://testnet.arcscan.app/api?module=account&action=txlist&address=${wallet}&sort=desc`
     );
     const txlistData = await txlistRes.json();
 
-    let hasNormalTxs =
+    if (
       txlistData.status === "1" &&
       Array.isArray(txlistData.result) &&
-      txlistData.result.length > 0;
+      txlistData.result.length > 0
+    ) {
+      addressType = "wallet";
+    }
 
     // =========================
-    // STEP 2 — TOKEN CONTRACT CHECK
+    // STEP 2 — TOKEN HEURISTIC
     // =========================
-    if (!hasNormalTxs) {
+    if (addressType === "unknown") {
       const tokenRes = await fetch(
         `https://testnet.arcscan.app/api?module=token&action=tokeninfo&contractaddress=${wallet}`
       );
@@ -140,23 +130,25 @@ async function runScan() {
         tokenData.result.tokenName
       ) {
         terminal.innerHTML =
-          "<div style='color:#ff4d4d;font-weight:700;'>Este endereço pertence a um contrato de token, não a uma wallet.</div>";
-        resultsContainer.classList.add("hidden");
+          "<div style='color:#ff4d4d;font-weight:700;'>Endereço aparenta ser um contrato de token. Análise de wallet abortada.</div>";
         return;
       }
     }
 
     // =========================
-    // STEP 3 — FETCH USDC TXs
+    // HEURISTIC NOTICE
     // =========================
-    terminal.innerHTML =
-      "<div style='color:#aaa;'>Carregando transações USDC…</div>";
+    if (addressType === "unknown") {
+      terminal.innerHTML =
+        "<div style='color:#ffb84d;'>⚠️ Tipo de endereço não pôde ser determinado com certeza no Testnet. Continuando como wallet.</div>";
+    }
 
-    const url =
-      `https://testnet.arcscan.app/api?module=account&action=tokentx` +
-      `&contractaddress=${USDC_CONTRACT}&address=${wallet}&sort=desc`;
-
-    const res = await fetch(url);
+    // =========================
+    // STEP 3 — USDC TXs
+    // =========================
+    const res = await fetch(
+      `https://testnet.arcscan.app/api?module=account&action=tokentx&contractaddress=${USDC_CONTRACT}&address=${wallet}&sort=desc`
+    );
     const data = await res.json();
     const txs = data.result || [];
 
@@ -164,43 +156,36 @@ async function runScan() {
 
     if (!txs.length) {
       terminal.innerHTML =
-        "<div style='color:#aaa;'>Nenhuma transação USDC encontrada. Wallet inativa.</div>";
-      snapTxEl.textContent = "0";
-      snapActiveEl.innerHTML = `<span class="active-no">No</span>`;
+        "<div style='color:#aaa;'>Nenhuma transação USDC encontrada.</div>";
       resultsContainer.classList.remove("hidden");
       return;
     }
 
-    txs.sort((a, b) => Number(b.timeStamp) - Number(a.timeStamp));
-
     snapTxEl.textContent = txs.length;
     snapActiveEl.innerHTML = `<span class="active-yes">Yes</span>`;
-
     txs.forEach(tx => appendTx(tx, wallet));
     resultsContainer.classList.remove("hidden");
 
   } catch (err) {
     console.error(err);
     terminal.innerHTML =
-      "<div style='color:#aaa;'>Erro ao conectar à API do ArcScan.</div>";
+      "<div style='color:#aaa;'>Erro ao conectar à ArcScan API.</div>";
   }
 }
 
 checkBtn.onclick = runScan;
-
-addrInput.addEventListener("keyup", e => {
-  if (e.key === "Enter") runScan();
-});
+addrInput.addEventListener("keyup", e => e.key === "Enter" && runScan());
 
 copyLinkBtn.onclick = () => {
-  const wallet = addrInput.value.trim();
   navigator.clipboard.writeText(
-    `${location.origin}${location.pathname}?addr=${wallet}`
+    `${location.origin}${location.pathname}?addr=${addrInput.value.trim()}`
   );
   alert("Copiado!");
 };
 
 openExpBtn.onclick = () => {
-  const wallet = addrInput.value.trim();
-  window.open(`https://testnet.arcscan.app/address/${wallet}`, "_blank");
+  window.open(
+    `https://testnet.arcscan.app/address/${addrInput.value.trim()}`,
+    "_blank"
+  );
 };
