@@ -2,6 +2,7 @@ import fetch from "node-fetch";
 
 const ARC_API = "https://testnet.arcscan.app/api";
 
+// test wallet (will change later)
 const TEST_WALLET = "0x63a131657cdc57865df571e2e61e2eff6ee0c1c8";
 
 export async function fetchTransactions() {
