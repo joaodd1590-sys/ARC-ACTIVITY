@@ -1,49 +1,3 @@
-const ARC_RPC = "https://testnet-rpc.arc.network";
-const ARC_SCAN =
-  "https://testnet.arcscan.app/api?module=account&action=txlist";
-
-const SYMBOL_CALL = "0x95d89b41"; // symbol()
-
-const tokenCache = {};
-
-async function getTokenSymbol(contract) {
-  if (
-    !contract ||
-    contract === "0x0000000000000000000000000000000000000000"
-  ) {
-    return "ARC";
-  }
-
-  if (tokenCache[contract]) return tokenCache[contract];
-
-  try {
-    const r = await fetch(ARC_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "eth_call",
-        params: [{ to: contract, data: SYMBOL_CALL }, "latest"],
-      }),
-    });
-
-    const j = await r.json();
-    if (!j.result) throw new Error("no symbol");
-
-    const hex = j.result.replace(/^0x/, "");
-    const symbol = Buffer.from(hex, "hex")
-      .toString("utf8")
-      .replace(/\0/g, "")
-      .trim();
-
-    tokenCache[contract] = symbol || "Unknown";
-    return tokenCache[contract];
-  } catch {
-    return "Unknown";
-  }
-}
-
 export default async function handler(req, res) {
   try {
     const { address } = req.query;
@@ -52,39 +6,63 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Invalid address" });
     }
 
-    const r = await fetch(`${ARC_SCAN}&address=${address}&sort=desc`);
-    const json = await r.json();
+    const base = "https://testnet.arcscan.app/api";
 
-    if (!json || !json.result) {
-      return res.status(200).json({
-        address,
-        total: 0,
-        transactions: [],
-      });
-    }
+    // ARC native txs
+    const nativeReq = fetch(
+      `${base}?module=account&action=txlist&address=${address}&sort=desc`
+    );
+
+    // ERC20 txs (USDC, EURC, etc)
+    const tokenReq = fetch(
+      `${base}?module=account&action=tokentx&address=${address}&sort=desc`
+    );
+
+    const [nativeRes, tokenRes] = await Promise.all([nativeReq, tokenReq]);
+    const nativeJson = await nativeRes.json();
+    const tokenJson = await tokenRes.json();
 
     const txs = [];
 
-    for (const tx of json.result) {
-      let raw = tx.value || "0";
-      if (raw.startsWith("0x")) raw = BigInt(raw).toString();
+    // ===== ARC native =====
+    if (nativeJson?.result) {
+      for (const tx of nativeJson.result) {
+        if (tx.value === "0") continue;
 
-      const value = Number(BigInt(raw)) / 1e18;
+        const value = Number(tx.value) / 1e18;
 
-      const token = tx.contractAddress
-        ? await getTokenSymbol(tx.contractAddress)
-        : "ARC";
-
-      txs.push({
-        hash: tx.hash,
-        from: tx.from,
-        to: tx.to,
-        total: value.toFixed(6),
-        token,
-        time: new Date(Number(tx.timeStamp) * 1000).toISOString(),
-        link: `https://testnet.arcscan.app/tx/${tx.hash}`,
-      });
+        txs.push({
+          hash: tx.hash,
+          from: tx.from,
+          to: tx.to,
+          total: value.toFixed(6),
+          token: "ARC",
+          time: new Date(Number(tx.timeStamp) * 1000).toISOString(),
+          link: `https://testnet.arcscan.app/tx/${tx.hash}`,
+        });
+      }
     }
+
+    // ===== ERC20 =====
+    if (tokenJson?.result) {
+      for (const tx of tokenJson.result) {
+        const value =
+          Number(tx.value) / Math.pow(10, Number(tx.tokenDecimal));
+
+        txs.push({
+          hash: tx.hash,
+          from: tx.from,
+          to: tx.to,
+          total: value.toFixed(6),
+          token: tx.tokenSymbol,
+          time: new Date(Number(tx.timeStamp) * 1000).toISOString(),
+          link: `https://testnet.arcscan.app/tx/${tx.hash}`,
+        });
+      }
+    }
+
+    // Sort newest first
+    txs.sort((a, b) => new Date(b.time) - new Date(a.time));
 
     res.status(200).json({
       address,
@@ -92,7 +70,7 @@ export default async function handler(req, res) {
       transactions: txs,
     });
   } catch (err) {
-    console.error("ACTIVITY ERROR:", err);
+    console.error("ACTIVITY ERROR", err);
     res.status(500).json({ error: "server error" });
   }
 }
