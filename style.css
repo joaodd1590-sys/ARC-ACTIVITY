@@ -323,4 +323,13 @@ body {
   line-height: 1.5;
 }
 
+.status-yes {
+  color: #22c55e; /* green */
+  font-weight: 600;
+}
+
+.status-no {
+  color: #ef4444; /* red */
+  font-weight: 600;
+}
 
