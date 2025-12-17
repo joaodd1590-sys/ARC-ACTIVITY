@@ -41,7 +41,8 @@
 
         <div class="result-row">
           <span class="label">Wallet</span>
-          <span id="sumWallet" class="value">-</span>
+          <!-- 🔧 classe adicionada para truncar no mobile -->
+          <span id="sumWallet" class="value wallet-address">-</span>
         </div>
 
         <div class="result-row">
@@ -69,23 +70,24 @@
           <span id="sumDays" class="value">0 days</span>
         </div>
 
-        <!-- NET FLOW (SAFE ADDITION) -->
         <div class="result-row">
           <span class="label">Net Flow</span>
           <span id="sumNetFlow" class="value">-</span>
         </div>
 
         <div class="result-row">
-         <span class="label">Activity Intensity</span>
-         <span id="sumIntensity" class="value">-</span>
+          <span class="label">Activity Intensity</span>
+          <span id="sumIntensity" class="value">-</span>
         </div>
 
       </section>
-          <div class="tx-filters">
-            <button class="filter-btn active" data-filter="all">All</button>
-           <button class="filter-btn" data-filter="in">IN</button>
-           <button class="filter-btn" data-filter="out">OUT</button>
-        </div>
+
+      <!-- FILTERS -->
+      <div class="tx-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="in">IN</button>
+        <button class="filter-btn" data-filter="out">OUT</button>
+      </div>
 
       <!-- TRANSACTIONS -->
       <section class="card">
@@ -97,6 +99,29 @@
 
     <!-- FOOTER -->
     <footer class="app-footer">
+
+      <!-- 🔧 ÍCONES RESTAURADOS -->
+      <div class="footer-icons">
+        <a href="https://github.com/joaodd1590-sys/ARC-ACTIVITY" target="_blank" aria-label="GitHub">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 .3a12 12 0 00-3.8 23.4c.6.1.8-.2.8-.6v-2.2
+              c-3.3.7-4-1.4-4-1.4-.5-1.3-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7
+              1.1.1 1.7 1.1 1.7 1.1 1 .1 2.6.7 3.2.5.1-.7.4-1.1.7-1.4
+              -2.6-.3-5.3-1.3-5.3-5.8 0-1.3.4-2.3 1.1-3.1-.1-.3-.5-1.5.1-3.1
+              0 0 .9-.3 3.1 1.1a10.7 10.7 0 015.6 0
+              c2.2-1.4 3.1-1.1 3.1-1.1.6 1.6.2 2.8.1 3.1
+              .7.8 1.1 1.8 1.1 3.1 0 4.5-2.7 5.5-5.3 5.8
+              .4.3.8 1 .8 2v3c0 .4.2.7.8.6A12 12 0 0012 .3z"/>
+          </svg>
+        </a>
+
+        <a href="https://x.com/cj54475427" target="_blank" aria-label="X">
+          <svg viewBox="0 0 24 24">
+            <path d="M18.2 2H21l-6.6 7.6L22 22h-6.8l-5.3-6.4L4.4 22H1.6l7-8.1L2 2h6.9l4.7 5.6L18.2 2z"/>
+          </svg>
+        </a>
+      </div>
+
       <div>Built by João Carlos · Arc Ecosystem Community 💙</div>
       <div>© 2025 ARC Activity Tracker. All rights reserved.</div>
     </footer>
