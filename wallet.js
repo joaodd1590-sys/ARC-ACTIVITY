@@ -20,12 +20,12 @@ let currentFilter = "all";
 
 checkBtn.addEventListener("click", scanWallet);
 
-// Filter buttons
+// ================= FILTER BUTTONS =================
 document.addEventListener("click", e => {
   if (!e.target.classList.contains("filter-btn")) return;
 
-  document.querySelectorAll(".filter-btn").forEach(b =>
-    b.classList.remove("active")
+  document.querySelectorAll(".filter-btn").forEach(btn =>
+    btn.classList.remove("active")
   );
 
   e.target.classList.add("active");
@@ -33,8 +33,10 @@ document.addEventListener("click", e => {
   renderTransactions();
 });
 
+// ================= MAIN SCAN =================
 async function scanWallet() {
   const address = addrInput.value.trim();
+
   if (!address || !address.startsWith("0x")) {
     alert("Invalid wallet address");
     return;
@@ -62,7 +64,7 @@ async function scanWallet() {
 
   const totalTx = currentTxs.length;
 
-  // ===== SUMMARY =====
+  // ================= SUMMARY =================
   sumWallet.textContent = address;
   sumTotal.textContent = totalTx;
 
@@ -83,13 +85,16 @@ async function scanWallet() {
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  // ===== NET FLOW =====
+  // ================= NET FLOW =================
   let inCount = 0;
   let outCount = 0;
 
   currentTxs.forEach(tx => {
-    if (tx.from.toLowerCase() === address.toLowerCase()) outCount++;
-    else inCount++;
+    if (tx.from.toLowerCase() === address.toLowerCase()) {
+      outCount++;
+    } else {
+      inCount++;
+    }
   });
 
   const netFlow = inCount - outCount;
@@ -105,7 +110,7 @@ async function scanWallet() {
     sumNetFlow.style.color = "#9ba3b5";
   }
 
-  // ===== ACTIVITY INTENSITY =====
+  // ================= ACTIVITY INTENSITY =================
   const txPerDay = totalTx / diffDays;
 
   if (txPerDay < 0.2) {
@@ -123,6 +128,7 @@ async function scanWallet() {
   results.classList.remove("hidden");
 }
 
+// ================= RENDER TRANSACTIONS =================
 function renderTransactions() {
   terminal.innerHTML = "";
 
@@ -143,6 +149,7 @@ function renderTransactions() {
           <div class="addr-label">To</div>
           <div class="addr-value">${tx.to}</div>
         </div>
+
         <span class="${isOut ? "badge-out" : "badge-in"}">
           ${isOut ? "OUT" : "IN"}
         </span>
@@ -157,21 +164,26 @@ function renderTransactions() {
 
         <div class="tx-actions">
           <button class="btn-secondary copy-btn">Copy</button>
-          <a class="btn-secondary" href="https://testnet.arcscan.app/tx/${tx.hash}" target="_blank">
+          <a
+            class="btn-secondary"
+            href="https://testnet.arcscan.app/tx/${tx.hash}"
+            target="_blank"
+          >
             Explorer
           </a>
         </div>
       </div>
     `;
 
-    el.querySelector(".copy-btn").addEventListener("click", e => {
+    const copyBtn = el.querySelector(".copy-btn");
+    copyBtn.addEventListener("click", () => {
       navigator.clipboard.writeText(tx.hash);
-      e.target.textContent = "Copied!";
-      e.target.classList.add("btn-copied");
+      copyBtn.textContent = "Copied!";
+      copyBtn.classList.add("btn-copied");
 
       setTimeout(() => {
-        e.target.textContent = "Copy";
-        e.target.classList.remove("btn-copied");
+        copyBtn.textContent = "Copy";
+        copyBtn.classList.remove("btn-copied");
       }, 1200);
     });
 
