@@ -341,3 +341,17 @@ body {
   font-weight: 600;
 }
 
+.net-in {
+  color: #22c55e; /* green */
+  font-weight: 600;
+}
+
+.net-out {
+  color: #ef4444; /* red */
+  font-weight: 600;
+}
+
+.net-neutral {
+  color: #9ca3af; /* gray */
+  font-weight: 600;
+}
