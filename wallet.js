@@ -11,6 +11,7 @@ const sumLast = document.getElementById("sumLast");
 const sumDays = document.getElementById("sumDays");
 const sumActive = document.getElementById("sumActive");
 const sumNetFlow = document.getElementById("sumNetFlow");
+const sumIntensity = document.getElementById("sumIntensity"); // NEW
 
 checkBtn.addEventListener("click", scanWallet);
 
@@ -41,7 +42,7 @@ async function scanWallet() {
   const txs = data.transactions;
   const totalTx = txs.length;
 
-  // BASIC SUMMARY
+  // ---------------- BASIC SUMMARY ----------------
   sumWallet.textContent = address;
   sumTotal.textContent = totalTx;
 
@@ -59,11 +60,11 @@ async function scanWallet() {
 
   sumDays.textContent = `${diffDays} days`;
 
-  // ACTIVE
+  // ---------------- ACTIVE ----------------
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  // NET FLOW
+  // ---------------- NET FLOW ----------------
   let inCount = 0;
   let outCount = 0;
 
@@ -85,7 +86,21 @@ async function scanWallet() {
     sumNetFlow.textContent = "Neutral";
   }
 
-  // TRANSACTIONS
+  // ---------------- ACTIVITY INTENSITY (NEW) ----------------
+  const txPerDay = totalTx / diffDays;
+
+  if (txPerDay < 0.2) {
+    sumIntensity.textContent = "Low";
+    sumIntensity.className = "value intensity-low";
+  } else if (txPerDay < 1) {
+    sumIntensity.textContent = "Medium";
+    sumIntensity.className = "value intensity-medium";
+  } else {
+    sumIntensity.textContent = "High";
+    sumIntensity.className = "value intensity-high";
+  }
+
+  // ---------------- TRANSACTIONS ----------------
   txs.forEach(tx => {
     const el = document.createElement("div");
     el.className = "tx";
