@@ -27,9 +27,9 @@ export default async function handler(req, res) {
         hash: tx.hash,
         from: tx.from,
         to: tx.to,
-        token: tx.tokenSymbol, // USDC, EURC, etc
-        total: `${value.toFixed(6)} ${tx.tokenSymbol}`,
-        time: new Date(Number(tx.timeStamp) * 1000).toLocaleString("pt-BR"),
+        amount: value.toFixed(6),   // 👈 SOMENTE O NÚMERO
+        token: tx.tokenSymbol,      // 👈 SOMENTE O TOKEN
+        time: Number(tx.timeStamp), // 👈 TIMESTAMP PURO
         link: `https://testnet.arcscan.app/tx/${tx.hash}`
       };
     });
