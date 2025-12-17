@@ -20,7 +20,7 @@ let currentFilter = "all";
 
 checkBtn.addEventListener("click", scanWallet);
 
-// ================= FILTER BUTTONS =================
+/* ================= FILTER BUTTONS ================= */
 document.addEventListener("click", e => {
   if (!e.target.classList.contains("filter-btn")) return;
 
@@ -30,13 +30,13 @@ document.addEventListener("click", e => {
 
   e.target.classList.add("active");
   currentFilter = e.target.dataset.filter;
+
   renderTransactions();
 });
 
-// ================= MAIN SCAN =================
+/* ================= MAIN SCAN ================= */
 async function scanWallet() {
   const address = addrInput.value.trim();
-
   if (!address || !address.startsWith("0x")) {
     alert("Invalid wallet address");
     return;
@@ -61,10 +61,16 @@ async function scanWallet() {
 
   currentTxs = data.transactions;
   currentAddress = address;
+  currentFilter = "all";
+
+  document.querySelectorAll(".filter-btn").forEach(btn =>
+    btn.classList.remove("active")
+  );
+  document.querySelector('.filter-btn[data-filter="all"]')?.classList.add("active");
 
   const totalTx = currentTxs.length;
 
-  // ================= SUMMARY =================
+  /* ================= SUMMARY ================= */
   sumWallet.textContent = address;
   sumTotal.textContent = totalTx;
 
@@ -82,19 +88,17 @@ async function scanWallet() {
 
   sumDays.textContent = `${diffDays} days`;
 
+  // Active
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  // ================= NET FLOW =================
+  /* ================= NET FLOW ================= */
   let inCount = 0;
   let outCount = 0;
 
   currentTxs.forEach(tx => {
-    if (tx.from.toLowerCase() === address.toLowerCase()) {
-      outCount++;
-    } else {
-      inCount++;
-    }
+    if (tx.from.toLowerCase() === address.toLowerCase()) outCount++;
+    else inCount++;
   });
 
   const netFlow = inCount - outCount;
@@ -110,7 +114,7 @@ async function scanWallet() {
     sumNetFlow.style.color = "#9ba3b5";
   }
 
-  // ================= ACTIVITY INTENSITY =================
+  /* ================= ACTIVITY INTENSITY ================= */
   const txPerDay = totalTx / diffDays;
 
   if (txPerDay < 0.2) {
@@ -124,11 +128,25 @@ async function scanWallet() {
     sumIntensity.style.color = "#22c55e";
   }
 
+  /* ================= FILTER COUNTS ================= */
+  updateFilterCounts(inCount, outCount);
+
   renderTransactions();
   results.classList.remove("hidden");
 }
 
-// ================= RENDER TRANSACTIONS =================
+/* ================= FILTER COUNTERS ================= */
+function updateFilterCounts(inCount, outCount) {
+  const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+  const inBtn = document.querySelector('.filter-btn[data-filter="in"]');
+  const outBtn = document.querySelector('.filter-btn[data-filter="out"]');
+
+  if (allBtn) allBtn.textContent = `All (${currentTxs.length})`;
+  if (inBtn) inBtn.textContent = `IN (${inCount})`;
+  if (outBtn) outBtn.textContent = `OUT (${outCount})`;
+}
+
+/* ================= RENDER TX LIST ================= */
 function renderTransactions() {
   terminal.innerHTML = "";
 
