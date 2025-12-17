@@ -10,6 +10,10 @@ const sumFirst = document.getElementById("sumFirst");
 const sumLast = document.getElementById("sumLast");
 const sumDays = document.getElementById("sumDays");
 const sumActive = document.getElementById("sumActive");
+const sumBehavior = document.getElementById("sumBehavior");
+const sumNetFlow = document.getElementById("sumNetFlow");
+const sumAge = document.getElementById("sumAge");
+const sumIntensity = document.getElementById("sumIntensity");
 
 checkBtn.addEventListener("click", scanWallet);
 
@@ -31,11 +35,14 @@ async function scanWallet() {
     return;
   }
 
-  // ---- WALLET SUMMARY ----
-  sumWallet.textContent = address;
-  sumTotal.textContent = data.transactions.length;
+  const txs = data.transactions;
+  const totalTx = txs.length;
 
-  const times = data.transactions.map(tx => new Date(tx.time).getTime());
+  // ---- BASIC SUMMARY ----
+  sumWallet.textContent = address;
+  sumTotal.textContent = totalTx;
+
+  const times = txs.map(tx => new Date(tx.time).getTime());
   const first = new Date(Math.min(...times));
   const last = new Date(Math.max(...times));
 
@@ -49,19 +56,74 @@ async function scanWallet() {
 
   sumDays.textContent = `${diffDays} days`;
 
-  // ---- ACTIVE STATUS (NEW, sem quebrar nada) ----
-  if (data.transactions.length > 0) {
-    sumActive.textContent = "Yes";
-    sumActive.classList.remove("status-no");
-    sumActive.classList.add("status-yes");
+  // ---- ACTIVE ----
+  sumActive.textContent = "Yes";
+  sumActive.className = "value status-yes";
+
+  // ---- NET FLOW + BEHAVIOR ----
+  let inCount = 0;
+  let outCount = 0;
+
+  txs.forEach(tx => {
+    if (tx.from.toLowerCase() === address.toLowerCase()) {
+      outCount++;
+    } else {
+      inCount++;
+    }
+  });
+
+  // Net Flow
+  const netFlow = inCount - outCount;
+  sumNetFlow.textContent =
+    netFlow > 0
+      ? `+${netFlow} IN`
+      : netFlow < 0
+      ? `${netFlow} OUT`
+      : "Neutral";
+
+  // Behavior
+  const inPct = inCount / totalTx;
+  const outPct = outCount / totalTx;
+
+  if (outPct > 0.6) {
+    sumBehavior.textContent = "Mostly Sender";
+    sumBehavior.className = "value behavior-sender";
+  } else if (inPct > 0.6) {
+    sumBehavior.textContent = "Mostly Receiver";
+    sumBehavior.className = "value behavior-receiver";
   } else {
-    sumActive.textContent = "No";
-    sumActive.classList.remove("status-yes");
-    sumActive.classList.add("status-no");
+    sumBehavior.textContent = "Balanced";
+    sumBehavior.className = "value behavior-balanced";
+  }
+
+  // ---- WALLET AGE ----
+  if (diffDays < 30) {
+    sumAge.textContent = "New";
+    sumAge.className = "value age-new";
+  } else if (diffDays < 180) {
+    sumAge.textContent = "Established";
+    sumAge.className = "value age-established";
+  } else {
+    sumAge.textContent = "Old";
+    sumAge.className = "value age-old";
+  }
+
+  // ---- ACTIVITY INTENSITY ----
+  const txPerDay = totalTx / diffDays;
+
+  if (txPerDay < 0.2) {
+    sumIntensity.textContent = "Low";
+    sumIntensity.className = "value intensity-low";
+  } else if (txPerDay < 1) {
+    sumIntensity.textContent = "Medium";
+    sumIntensity.className = "value intensity-medium";
+  } else {
+    sumIntensity.textContent = "High";
+    sumIntensity.className = "value intensity-high";
   }
 
   // ---- TRANSACTIONS ----
-  data.transactions.forEach(tx => {
+  txs.forEach(tx => {
     const el = document.createElement("div");
     el.className = "tx";
 
