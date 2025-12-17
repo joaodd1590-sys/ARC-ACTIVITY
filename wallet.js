@@ -9,6 +9,7 @@ const sumTotal = document.getElementById("sumTotal");
 const sumFirst = document.getElementById("sumFirst");
 const sumLast = document.getElementById("sumLast");
 const sumDays = document.getElementById("sumDays");
+const sumActive = document.getElementById("sumActive");
 
 checkBtn.addEventListener("click", scanWallet);
 
@@ -47,6 +48,17 @@ async function scanWallet() {
   );
 
   sumDays.textContent = `${diffDays} days`;
+
+  // ---- ACTIVE STATUS (NEW, sem quebrar nada) ----
+  if (data.transactions.length > 0) {
+    sumActive.textContent = "Yes";
+    sumActive.classList.remove("status-no");
+    sumActive.classList.add("status-yes");
+  } else {
+    sumActive.textContent = "No";
+    sumActive.classList.remove("status-yes");
+    sumActive.classList.add("status-no");
+  }
 
   // ---- TRANSACTIONS ----
   data.transactions.forEach(tx => {
