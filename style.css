@@ -501,5 +501,27 @@ body {
     direction: ltr;
   }
 }
+/* ================= FOOTER ICON FIX (MOBILE) ================= */
 
+@media (max-width: 520px) {
+  .footer-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 26px;
+    margin-bottom: 14px;
+  }
+
+  .footer-icons a {
+    color: var(--text-muted);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .footer-icons svg {
+    width: 26px;
+    height: 26px;
+    display: block;
+  }
+}
 
