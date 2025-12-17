@@ -19,7 +19,8 @@ checkBtn.addEventListener("click", scanWallet);
 
 async function scanWallet() {
   const address = addrInput.value.trim();
-  if (!address.startsWith("0x")) {
+
+  if (!address || !address.startsWith("0x")) {
     alert("Invalid wallet address");
     return;
   }
@@ -27,8 +28,14 @@ async function scanWallet() {
   terminal.innerHTML = "";
   results.classList.add("hidden");
 
-  const res = await fetch(`/api/activity?address=${address}`);
-  const data = await res.json();
+  let data;
+  try {
+    const res = await fetch(`/api/activity?address=${address}`);
+    data = await res.json();
+  } catch (e) {
+    alert("Failed to fetch activity data");
+    return;
+  }
 
   if (!data.transactions || data.transactions.length === 0) {
     alert("No transactions found");
@@ -38,7 +45,7 @@ async function scanWallet() {
   const txs = data.transactions;
   const totalTx = txs.length;
 
-  // ---- BASIC SUMMARY ----
+  // ---------------- BASIC SUMMARY ----------------
   sumWallet.textContent = address;
   sumTotal.textContent = totalTx;
 
@@ -56,11 +63,11 @@ async function scanWallet() {
 
   sumDays.textContent = `${diffDays} days`;
 
-  // ---- ACTIVE ----
+  // ---------------- ACTIVE ----------------
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  // ---- NET FLOW + BEHAVIOR ----
+  // ---------------- NET FLOW + BEHAVIOR ----------------
   let inCount = 0;
   let outCount = 0;
 
@@ -72,16 +79,16 @@ async function scanWallet() {
     }
   });
 
-  // Net Flow
   const netFlow = inCount - outCount;
-  sumNetFlow.textContent =
-    netFlow > 0
-      ? `+${netFlow} IN`
-      : netFlow < 0
-      ? `${netFlow} OUT`
-      : "Neutral";
 
-  // Behavior
+  if (netFlow > 0) {
+    sumNetFlow.textContent = `+${netFlow} IN`;
+  } else if (netFlow < 0) {
+    sumNetFlow.textContent = `${netFlow} OUT`;
+  } else {
+    sumNetFlow.textContent = "Neutral";
+  }
+
   const inPct = inCount / totalTx;
   const outPct = outCount / totalTx;
 
@@ -96,7 +103,7 @@ async function scanWallet() {
     sumBehavior.className = "value behavior-balanced";
   }
 
-  // ---- WALLET AGE ----
+  // ---------------- WALLET AGE ----------------
   if (diffDays < 30) {
     sumAge.textContent = "New";
     sumAge.className = "value age-new";
@@ -108,7 +115,7 @@ async function scanWallet() {
     sumAge.className = "value age-old";
   }
 
-  // ---- ACTIVITY INTENSITY ----
+  // ---------------- ACTIVITY INTENSITY ----------------
   const txPerDay = totalTx / diffDays;
 
   if (txPerDay < 0.2) {
@@ -122,7 +129,7 @@ async function scanWallet() {
     sumIntensity.className = "value intensity-high";
   }
 
-  // ---- TRANSACTIONS ----
+  // ---------------- TRANSACTIONS ----------------
   txs.forEach(tx => {
     const el = document.createElement("div");
     el.className = "tx";
