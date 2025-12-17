@@ -6,33 +6,62 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Invalid address" });
     }
 
-    const url = `https://testnet.arcscan.app/api?module=account&action=tokentx&address=${address}&sort=desc`;
-    const r = await fetch(url);
-    const json = await r.json();
+    const base = "https://testnet.arcscan.app/api";
 
-    if (!json || !Array.isArray(json.result)) {
-      return res.status(200).json({
-        address,
-        total: 0,
-        transactions: []
-      });
+    const [nativeRes, tokenRes] = await Promise.all([
+      fetch(`${base}?module=account&action=txlist&address=${address}&sort=desc`),
+      fetch(`${base}?module=account&action=tokentx&address=${address}&sort=desc`)
+    ]);
+
+    const nativeJson = await nativeRes.json();
+    const tokenJson = await tokenRes.json();
+
+    const txs = [];
+
+    /* =========================
+       ERC20 TOKENS (USDC, EURC)
+    ========================= */
+    if (tokenJson?.result) {
+      for (const tx of tokenJson.result) {
+        txs.push({
+          hash: tx.hash,
+          from: tx.from,
+          to: tx.to,
+          total: (
+            Number(tx.value) /
+            Math.pow(10, Number(tx.tokenDecimal))
+          ).toFixed(6),
+          token: tx.tokenSymbol,
+          time: new Date(Number(tx.timeStamp) * 1000).toISOString(),
+          link: `https://testnet.arcscan.app/tx/${tx.hash}`
+        });
+      }
     }
 
-    const txs = json.result.map(tx => {
-      const decimals = Number(tx.tokenDecimal || 18);
-      const value =
-        Number(tx.value) / Math.pow(10, decimals);
+    /* =========================
+       NATIVE (somente se value > 0)
+       Rotulado como NATIVE (não ARC)
+    ========================= */
+    if (nativeJson?.result) {
+      for (const tx of nativeJson.result) {
+        if (tx.value === "0") continue;
 
-      return {
-        hash: tx.hash,
-        from: tx.from,
-        to: tx.to,
-        amount: value.toFixed(6),   // 👈 SOMENTE O NÚMERO
-        token: tx.tokenSymbol,      // 👈 SOMENTE O TOKEN
-        time: Number(tx.timeStamp), // 👈 TIMESTAMP PURO
-        link: `https://testnet.arcscan.app/tx/${tx.hash}`
-      };
-    });
+        txs.push({
+          hash: tx.hash,
+          from: tx.from,
+          to: tx.to,
+          total: (Number(tx.value) / 1e18).toFixed(6),
+          token: "NATIVE",
+          time: new Date(Number(tx.timeStamp) * 1000).toISOString(),
+          link: `https://testnet.arcscan.app/tx/${tx.hash}`
+        });
+      }
+    }
+
+    /* =========================
+       ORDER BY TIME DESC
+    ========================= */
+    txs.sort((a, b) => new Date(b.time) - new Date(a.time));
 
     res.status(200).json({
       address,
