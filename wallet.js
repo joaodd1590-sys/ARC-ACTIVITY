@@ -13,7 +13,25 @@ const sumActive = document.getElementById("sumActive");
 const sumNetFlow = document.getElementById("sumNetFlow");
 const sumIntensity = document.getElementById("sumIntensity");
 
+// Filter state
+let currentTxs = [];
+let currentAddress = "";
+let currentFilter = "all";
+
 checkBtn.addEventListener("click", scanWallet);
+
+// Filter buttons
+document.addEventListener("click", e => {
+  if (!e.target.classList.contains("filter-btn")) return;
+
+  document.querySelectorAll(".filter-btn").forEach(b =>
+    b.classList.remove("active")
+  );
+
+  e.target.classList.add("active");
+  currentFilter = e.target.dataset.filter;
+  renderTransactions();
+});
 
 async function scanWallet() {
   const address = addrInput.value.trim();
@@ -39,14 +57,16 @@ async function scanWallet() {
     return;
   }
 
-  const txs = data.transactions;
-  const totalTx = txs.length;
+  currentTxs = data.transactions;
+  currentAddress = address;
 
-  // ================= SUMMARY =================
+  const totalTx = currentTxs.length;
+
+  // ===== SUMMARY =====
   sumWallet.textContent = address;
   sumTotal.textContent = totalTx;
 
-  const times = txs.map(tx => new Date(tx.time).getTime());
+  const times = currentTxs.map(tx => new Date(tx.time).getTime());
   const first = new Date(Math.min(...times));
   const last = new Date(Math.max(...times));
 
@@ -60,55 +80,60 @@ async function scanWallet() {
 
   sumDays.textContent = `${diffDays} days`;
 
-  // ================= ACTIVE =================
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  // ================= NET FLOW =================
+  // ===== NET FLOW =====
   let inCount = 0;
   let outCount = 0;
 
-  txs.forEach(tx => {
-    if (tx.from.toLowerCase() === address.toLowerCase()) {
-      outCount++;
-    } else {
-      inCount++;
-    }
+  currentTxs.forEach(tx => {
+    if (tx.from.toLowerCase() === address.toLowerCase()) outCount++;
+    else inCount++;
   });
 
   const netFlow = inCount - outCount;
 
   if (netFlow > 0) {
     sumNetFlow.textContent = `+${netFlow} IN`;
-    sumNetFlow.style.color = "#22c55e"; // green
+    sumNetFlow.style.color = "#22c55e";
   } else if (netFlow < 0) {
     sumNetFlow.textContent = `${netFlow} OUT`;
-    sumNetFlow.style.color = "#ef4444"; // red
+    sumNetFlow.style.color = "#ef4444";
   } else {
     sumNetFlow.textContent = "Neutral";
-    sumNetFlow.style.color = "#9ba3b5"; // gray
+    sumNetFlow.style.color = "#9ba3b5";
   }
 
-  // ================= ACTIVITY INTENSITY =================
+  // ===== ACTIVITY INTENSITY =====
   const txPerDay = totalTx / diffDays;
 
   if (txPerDay < 0.2) {
     sumIntensity.textContent = "Low";
-    sumIntensity.style.color = "#9ba3b5"; // gray
+    sumIntensity.style.color = "#9ba3b5";
   } else if (txPerDay < 1) {
     sumIntensity.textContent = "Medium";
-    sumIntensity.style.color = "#facc15"; // yellow
+    sumIntensity.style.color = "#facc15";
   } else {
     sumIntensity.textContent = "High";
-    sumIntensity.style.color = "#22c55e"; // green
+    sumIntensity.style.color = "#22c55e";
   }
 
-  // ================= TRANSACTIONS =================
-  txs.forEach(tx => {
+  renderTransactions();
+  results.classList.remove("hidden");
+}
+
+function renderTransactions() {
+  terminal.innerHTML = "";
+
+  currentTxs.forEach(tx => {
+    const isOut = tx.from.toLowerCase() === currentAddress.toLowerCase();
+
+    if (currentFilter === "in" && isOut) return;
+    if (currentFilter === "out" && !isOut) return;
+
     const el = document.createElement("div");
     el.className = "tx";
-
-    const isOut = tx.from.toLowerCase() === address.toLowerCase();
 
     el.innerHTML = `
       <div class="tx-top">
@@ -118,7 +143,6 @@ async function scanWallet() {
           <div class="addr-label">To</div>
           <div class="addr-value">${tx.to}</div>
         </div>
-
         <span class="${isOut ? "badge-out" : "badge-in"}">
           ${isOut ? "OUT" : "IN"}
         </span>
@@ -133,32 +157,24 @@ async function scanWallet() {
 
         <div class="tx-actions">
           <button class="btn-secondary copy-btn">Copy</button>
-          <a
-            class="btn-secondary"
-            href="https://testnet.arcscan.app/tx/${tx.hash}"
-            target="_blank"
-          >
+          <a class="btn-secondary" href="https://testnet.arcscan.app/tx/${tx.hash}" target="_blank">
             Explorer
           </a>
         </div>
       </div>
     `;
 
-    // Copy logic
-    const copyBtn = el.querySelector(".copy-btn");
-    copyBtn.addEventListener("click", () => {
+    el.querySelector(".copy-btn").addEventListener("click", e => {
       navigator.clipboard.writeText(tx.hash);
-      copyBtn.textContent = "Copied!";
-      copyBtn.classList.add("btn-copied");
+      e.target.textContent = "Copied!";
+      e.target.classList.add("btn-copied");
 
       setTimeout(() => {
-        copyBtn.textContent = "Copy";
-        copyBtn.classList.remove("btn-copied");
+        e.target.textContent = "Copy";
+        e.target.classList.remove("btn-copied");
       }, 1200);
     });
 
     terminal.appendChild(el);
   });
-
-  results.classList.remove("hidden");
 }
