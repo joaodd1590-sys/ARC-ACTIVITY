@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 const ARC_API = "https://testnet.arcscan.app/api";
 
 // wallet de teste (vamos trocar depois)
-const TEST_WALLET = "0x0000000000000000000000000000000000000000";
+const TEST_WALLET = " 0x63a131657cdc57865df571e2e61e2eff6ee0c1c8 ";
 
 export async function fetchTransactions() {
   const url = `${ARC_API}?module=account&action=txlist&address=${TEST_WALLET}`;
