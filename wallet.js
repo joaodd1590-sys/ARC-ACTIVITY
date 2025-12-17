@@ -1,156 +1,210 @@
-// ARC Testnet USDC contract
-const USDC_CONTRACT = "0x3600000000000000000000000000000000000000";
+const addrInput = document.getElementById("addr");
+const checkBtn = document.getElementById("check");
+const results = document.getElementById("resultsContainer");
+const terminal = document.getElementById("terminal");
 
-const addrInput     = document.getElementById("addr");
-const checkBtn      = document.getElementById("check");
-const terminal      = document.getElementById("terminal");
-const resultsContainer = document.getElementById("resultsContainer");
+// Summary fields
+const sumWallet = document.getElementById("sumWallet");
+const sumTotal = document.getElementById("sumTotal");
+const sumFirst = document.getElementById("sumFirst");
+const sumLast = document.getElementById("sumLast");
+const sumDays = document.getElementById("sumDays");
+const sumActive = document.getElementById("sumActive");
+const sumNetFlow = document.getElementById("sumNetFlow");
+const sumIntensity = document.getElementById("sumIntensity");
 
-const snapWalletEl  = document.getElementById("snapWallet");
-const snapTxEl      = document.getElementById("snapTx");
-const snapActiveEl  = document.getElementById("snapActive");
+// Filter state
+let currentTxs = [];
+let currentAddress = "";
+let currentFilter = "all";
 
-const copyLinkBtn   = document.getElementById("copyLink");
-const openExpBtn    = document.getElementById("openExplorer");
+checkBtn.addEventListener("click", scanWallet);
 
-function shortAddr(a) {
-  return a.slice(0, 6) + "..." + a.slice(-4);
-}
+/* ================= FILTER BUTTONS ================= */
+document.addEventListener("click", e => {
+  if (!e.target.classList.contains("filter-btn")) return;
 
-function formatTime(ts) {
-  return new Date(ts * 1000).toLocaleString("pt-BR");
-}
+  document.querySelectorAll(".filter-btn").forEach(btn =>
+    btn.classList.remove("active")
+  );
 
-function formatUSDC(raw) {
-  return (Number(raw) / 1e6).toFixed(6);
-}
+  e.target.classList.add("active");
+  currentFilter = e.target.dataset.filter;
 
-function clearTerminal() {
-  terminal.innerHTML = "";
-}
+  renderTransactions();
+});
 
-function copyTxHash(btn, hash) {
-  navigator.clipboard.writeText(hash);
-
-  btn.classList.add("btn-copied", "btn-copy-anim");
-  btn.textContent = "Copied!";
-
-  setTimeout(() => {
-    btn.classList.remove("btn-copied", "btn-copy-anim");
-    btn.textContent = "Copy";
-  }, 1000);
-}
-
-function appendTx(tx, wallet) {
-  const isOut = tx.from.toLowerCase() === wallet.toLowerCase();
-  const badge = isOut
-    ? `<span class="badge-out">OUT</span>`
-    : `<span class="badge-in">IN</span>`;
-
-  const value = formatUSDC(tx.value);
-  const link = `https://testnet.arcscan.app/tx/${tx.hash}`;
-
-  const row = document.createElement("div");
-  row.className = "tx";
-
-  row.innerHTML = `
-    <div class="tx-top">
-      <div class="addresses">
-        <div>
-          <div class="addr-label">From</div>
-          <div class="addr-value">${tx.from}</div>
-        </div>
-        <div>
-          <div class="addr-label">To</div>
-          <div class="addr-value">${tx.to}</div>
-        </div>
-      </div>
-
-      <div>${badge}</div>
-    </div>
-
-    <div class="tx-bottom">
-      <div class="tx-meta">${value} USDC • ${formatTime(tx.timeStamp)}</div>
-
-      <div class="tx-actions">
-        <button class="btn-secondary copy-btn"
-          onclick="copyTxHash(this, '${tx.hash}')">Copy</button>
-        <button class="btn-secondary"
-          onclick="window.open('${link}', '_blank')">Explorer</button>
-      </div>
-    </div>
-  `;
-
-  terminal.prepend(row);
-}
-
-async function runScan() {
-  const wallet = addrInput.value.trim();
-
-  if (!wallet.startsWith("0x") || wallet.length < 42) {
-    alert("Endereço inválido.");
+/* ================= MAIN SCAN ================= */
+async function scanWallet() {
+  const address = addrInput.value.trim();
+  if (!address || !address.startsWith("0x")) {
+    alert("Invalid wallet address");
     return;
   }
 
-  resultsContainer.classList.add("hidden");
-  terminal.innerHTML = "<div style='color:#aaa;'>Carregando...</div>";
+  terminal.innerHTML = "";
+  results.classList.add("hidden");
 
-  snapWalletEl.textContent = shortAddr(wallet);
-  snapTxEl.textContent = "0";
-  snapActiveEl.innerHTML = `<span class="active-no">No</span>`;
-
+  let data;
   try {
-    const url =
-      `https://testnet.arcscan.app/api?module=account&action=tokentx` +
-      `&contractaddress=${USDC_CONTRACT}&address=${wallet}`;
-
-    const res = await fetch(url);
-    const data = await res.json();
-    const txs = data.result || [];
-
-    clearTerminal();
-
-    txs.sort((a, b) => Number(a.timeStamp) - Number(b.timeStamp));
-
-    snapTxEl.textContent = txs.length;
-    snapActiveEl.innerHTML = txs.length
-      ? `<span class="active-yes">Yes</span>`
-      : `<span class="active-no">No</span>`;
-
-    if (!txs.length) {
-      terminal.innerHTML =
-        "<div style='color:#aaa;'>Nenhuma transação USDC encontrada.</div>";
-      resultsContainer.classList.remove("hidden");
-      return;
-    }
-
-    txs.forEach(tx => appendTx(tx, wallet));
-
-    resultsContainer.classList.remove("hidden");
-
-  } catch (err) {
-    terminal.innerHTML =
-      "<div style='color:#aaa;'>Erro ao conectar à API.</div>";
+    const res = await fetch(`/api/activity?address=${address}`);
+    data = await res.json();
+  } catch {
+    alert("Failed to fetch activity data");
+    return;
   }
+
+  if (!data.transactions || data.transactions.length === 0) {
+    alert("No transactions found");
+    return;
+  }
+
+  currentTxs = data.transactions;
+  currentAddress = address;
+  currentFilter = "all";
+
+  document.querySelectorAll(".filter-btn").forEach(btn =>
+    btn.classList.remove("active")
+  );
+  document.querySelector('.filter-btn[data-filter="all"]')?.classList.add("active");
+
+  const totalTx = currentTxs.length;
+
+  /* ================= SUMMARY ================= */
+  sumWallet.textContent = address;
+  sumTotal.textContent = totalTx;
+
+  const times = currentTxs.map(tx => new Date(tx.time).getTime());
+  const first = new Date(Math.min(...times));
+  const last = new Date(Math.max(...times));
+
+  sumFirst.textContent = first.toLocaleDateString();
+  sumLast.textContent = last.toLocaleDateString();
+
+  const diffDays = Math.max(
+    1,
+    Math.ceil((last - first) / (1000 * 60 * 60 * 24))
+  );
+
+  sumDays.textContent = `${diffDays} days`;
+
+  // Active
+  sumActive.textContent = "Yes";
+  sumActive.className = "value status-yes";
+
+  /* ================= NET FLOW ================= */
+  let inCount = 0;
+  let outCount = 0;
+
+  currentTxs.forEach(tx => {
+    if (tx.from.toLowerCase() === address.toLowerCase()) outCount++;
+    else inCount++;
+  });
+
+  const netFlow = inCount - outCount;
+
+  if (netFlow > 0) {
+    sumNetFlow.textContent = `+${netFlow} IN`;
+    sumNetFlow.style.color = "#22c55e";
+  } else if (netFlow < 0) {
+    sumNetFlow.textContent = `${netFlow} OUT`;
+    sumNetFlow.style.color = "#ef4444";
+  } else {
+    sumNetFlow.textContent = "Neutral";
+    sumNetFlow.style.color = "#9ba3b5";
+  }
+
+  /* ================= ACTIVITY INTENSITY ================= */
+  const txPerDay = totalTx / diffDays;
+
+  if (txPerDay < 0.2) {
+    sumIntensity.textContent = "Low";
+    sumIntensity.style.color = "#9ba3b5";
+  } else if (txPerDay < 1) {
+    sumIntensity.textContent = "Medium";
+    sumIntensity.style.color = "#facc15";
+  } else {
+    sumIntensity.textContent = "High";
+    sumIntensity.style.color = "#22c55e";
+  }
+
+  /* ================= FILTER COUNTS ================= */
+  updateFilterCounts(inCount, outCount);
+
+  renderTransactions();
+  results.classList.remove("hidden");
 }
 
-checkBtn.onclick = runScan;
+/* ================= FILTER COUNTERS ================= */
+function updateFilterCounts(inCount, outCount) {
+  const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+  const inBtn = document.querySelector('.filter-btn[data-filter="in"]');
+  const outBtn = document.querySelector('.filter-btn[data-filter="out"]');
 
-addrInput.addEventListener("keyup", e => {
-  if (e.key === "Enter") runScan();
-});
+  if (allBtn) allBtn.textContent = `All (${currentTxs.length})`;
+  if (inBtn) inBtn.textContent = `IN (${inCount})`;
+  if (outBtn) outBtn.textContent = `OUT (${outCount})`;
+}
 
-copyLinkBtn.onclick = () => {
-  const wallet = addrInput.value.trim();
-  navigator.clipboard.writeText(
-    `${location.origin}${location.pathname}?addr=${wallet}`
-  );
-  alert("Copiado!");
-};
+/* ================= RENDER TX LIST ================= */
+function renderTransactions() {
+  terminal.innerHTML = "";
 
-openExpBtn.onclick = () => {
-  const wallet = addrInput.value.trim();
-  window.open(`https://testnet.arcscan.app/address/${wallet}`, "_blank");
-};
+  currentTxs.forEach(tx => {
+    const isOut = tx.from.toLowerCase() === currentAddress.toLowerCase();
 
+    if (currentFilter === "in" && isOut) return;
+    if (currentFilter === "out" && !isOut) return;
 
+    const el = document.createElement("div");
+    el.className = "tx";
+
+    el.innerHTML = `
+      <div class="tx-top">
+        <div class="addresses">
+          <div class="addr-label">From</div>
+          <div class="addr-value">${tx.from}</div>
+          <div class="addr-label">To</div>
+          <div class="addr-value">${tx.to}</div>
+        </div>
+
+        <span class="${isOut ? "badge-out" : "badge-in"}">
+          ${isOut ? "OUT" : "IN"}
+        </span>
+      </div>
+
+      <div class="tx-bottom">
+        <div class="tx-meta">
+          <span class="tx-value">${tx.total}</span>
+          <span class="tx-sep">•</span>
+          <span class="tx-time">${tx.time}</span>
+        </div>
+
+        <div class="tx-actions">
+          <button class="btn-secondary copy-btn">Copy</button>
+          <a
+            class="btn-secondary"
+            href="https://testnet.arcscan.app/tx/${tx.hash}"
+            target="_blank"
+          >
+            Explorer
+          </a>
+        </div>
+      </div>
+    `;
+
+    const copyBtn = el.querySelector(".copy-btn");
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(tx.hash);
+      copyBtn.textContent = "Copied!";
+      copyBtn.classList.add("btn-copied");
+
+      setTimeout(() => {
+        copyBtn.textContent = "Copy";
+        copyBtn.classList.remove("btn-copied");
+      }, 1200);
+    });
+
+    terminal.appendChild(el);
+  });
+}
