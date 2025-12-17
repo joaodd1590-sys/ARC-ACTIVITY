@@ -480,5 +480,11 @@ body {
   color: #000;
   font-weight: 600;
 }
+.tx-actions a,
+.tx-actions a:hover,
+.tx-actions a:visited {
+  text-decoration: none;
+}
+
 
 
