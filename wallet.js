@@ -60,7 +60,7 @@ async function scanWallet() {
 
   sumDays.textContent = `${diffDays} days`;
 
-  // Active
+  // ================= ACTIVE =================
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
@@ -80,13 +80,13 @@ async function scanWallet() {
 
   if (netFlow > 0) {
     sumNetFlow.textContent = `+${netFlow} IN`;
-    sumNetFlow.style.color = "#22c55e";
+    sumNetFlow.style.color = "#22c55e"; // green
   } else if (netFlow < 0) {
     sumNetFlow.textContent = `${netFlow} OUT`;
-    sumNetFlow.style.color = "#ef4444";
+    sumNetFlow.style.color = "#ef4444"; // red
   } else {
     sumNetFlow.textContent = "Neutral";
-    sumNetFlow.style.color = "#9ba3b5";
+    sumNetFlow.style.color = "#9ba3b5"; // gray
   }
 
   // ================= ACTIVITY INTENSITY =================
@@ -94,13 +94,13 @@ async function scanWallet() {
 
   if (txPerDay < 0.2) {
     sumIntensity.textContent = "Low";
-    sumIntensity.style.color = "#9ba3b5";
+    sumIntensity.style.color = "#9ba3b5"; // gray
   } else if (txPerDay < 1) {
     sumIntensity.textContent = "Medium";
-    sumIntensity.style.color = "#facc15";
+    sumIntensity.style.color = "#facc15"; // yellow
   } else {
     sumIntensity.textContent = "High";
-    sumIntensity.style.color = "#22c55e";
+    sumIntensity.style.color = "#22c55e"; // green
   }
 
   // ================= TRANSACTIONS =================
@@ -126,8 +126,9 @@ async function scanWallet() {
 
       <div class="tx-bottom">
         <div class="tx-meta">
-          <div class="tx-value">${tx.total}</div>
-          <div class="tx-time">${tx.time}</div>
+          <span class="tx-value">${tx.total}</span>
+          <span class="tx-sep">•</span>
+          <span class="tx-time">${tx.time}</span>
         </div>
 
         <div class="tx-actions">
