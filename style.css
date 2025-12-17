@@ -387,4 +387,30 @@ body {
   background: #2ecc71 !important;
   color: #000 !important;
 }
+.tx-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: #1b2333;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.filter-btn:hover {
+  background: #27334b;
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  color: #000;
+  font-weight: 600;
+}
+
 
