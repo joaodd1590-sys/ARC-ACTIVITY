@@ -1,3 +1,48 @@
+import fetch from "node-fetch";
+
+const ARC_RPC = "https://testnet-rpc.arc.network";
+const ARC_SCAN =
+  "https://testnet.arcscan.app/api?module=account&action=txlist";
+
+const SYMBOL_CALL = "0x95d89b41"; // symbol()
+
+const tokenCache = {};
+
+async function getTokenSymbol(contract) {
+  if (!contract || contract === "0x0000000000000000000000000000000000000000") {
+    return "ARC";
+  }
+
+  if (tokenCache[contract]) return tokenCache[contract];
+
+  try {
+    const r = await fetch(ARC_RPC, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "eth_call",
+        params: [{ to: contract, data: SYMBOL_CALL }, "latest"],
+      }),
+    });
+
+    const j = await r.json();
+    if (!j.result) throw new Error("no symbol");
+
+    const hex = j.result.replace(/^0x/, "");
+    const symbol = Buffer.from(hex, "hex")
+      .toString("utf8")
+      .replace(/\0/g, "")
+      .trim();
+
+    tokenCache[contract] = symbol || "Unknown";
+    return tokenCache[contract];
+  } catch {
+    return "Unknown";
+  }
+}
+
 export default async function handler(req, res) {
   try {
     const { address } = req.query;
@@ -6,50 +51,44 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Invalid address" });
     }
 
-    const url = `https://testnet.arcscan.app/api?module=account&action=txlist&address=${address}&sort=desc`;
-    const r = await fetch(url);
+    const r = await fetch(`${ARC_SCAN}&address=${address}&sort=desc`);
     const json = await r.json();
 
     if (!json || !json.result) {
       return res.status(200).json({ address, total: 0, transactions: [] });
     }
 
-    const txs = json.result.map(tx => {
-      // VALUE (BigInt)
-      let rawValue = tx.value || "0";
-      if (rawValue.startsWith("0x")) {
-        rawValue = BigInt(rawValue).toString();
+    const txs = [];
+
+    for (const tx of json.result) {
+      let valueRaw = tx.value || "0";
+      if (valueRaw.startsWith("0x")) {
+        valueRaw = BigInt(valueRaw).toString();
       }
-      const valueWei = BigInt(rawValue);
-      const valueArc = Number(valueWei) / 1e18; // safe now
 
-      // GAS (BigInt)
-      const gasUsed = BigInt(tx.gasUsed || "0");
-      const gasPrice = BigInt(tx.gasPrice || "0");
-      const gasWei = gasUsed * gasPrice;
-      const gasArc = Number(gasWei) / 1e18;
+      const value = Number(BigInt(valueRaw)) / 1e18;
 
-      // TOTAL
-      const totalArc = valueArc + gasArc;
+      // Detect token
+      const token = tx.contractAddress
+        ? await getTokenSymbol(tx.contractAddress)
+        : "ARC";
 
-      return {
+      txs.push({
         hash: tx.hash,
         from: tx.from,
         to: tx.to,
-        value: valueArc.toFixed(6) + " Usdc",
-        gas: gasArc.toFixed(6) + " Usdc",
-        total: totalArc.toFixed(6) + " Usdc",
-        time: new Date(Number(tx.timeStamp) * 1000).toLocaleString(),
-        link: `https://testnet.arcscan.app/tx/${tx.hash}`
-      };
-    });
+        total: value.toFixed(6),
+        token,
+        time: new Date(Number(tx.timeStamp) * 1000).toISOString(),
+        link: `https://testnet.arcscan.app/tx/${tx.hash}`,
+      });
+    }
 
     res.status(200).json({
       address,
       total: txs.length,
-      transactions: txs
+      transactions: txs,
     });
-
   } catch (err) {
     console.error("ACTIVITY ERROR", err);
     res.status(500).json({ error: "server error" });
