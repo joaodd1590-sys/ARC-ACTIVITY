@@ -44,9 +44,9 @@ function formatAddress(addr) {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 }
 
-/* ================= STREAK (FIXED) ================= */
+/* ================= STREAK ================= */
 function calculateStreak(transactions) {
-  const daySet = new Set(
+  const days = new Set(
     transactions.map(tx => {
       const d = new Date(tx.time);
       d.setHours(0, 0, 0, 0);
@@ -54,13 +54,11 @@ function calculateStreak(transactions) {
     })
   );
 
-  const days = Array.from(daySet).sort((a, b) => b - a);
-
+  const sorted = Array.from(days).sort((a, b) => b - a);
   let streak = 1;
 
-  for (let i = 1; i < days.length; i++) {
-    const diff = days[i - 1] - days[i];
-    if (diff === 86400000) {
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i - 1] - sorted[i] === 86400000) {
       streak++;
     } else {
       break;
@@ -100,7 +98,7 @@ async function scanWallet() {
 
   const totalTx = currentTxs.length;
 
-  // SUMMARY
+  /* ===== SUMMARY ===== */
   sumWallet.textContent = formatAddress(address);
   sumTotal.textContent = totalTx;
 
@@ -121,7 +119,7 @@ async function scanWallet() {
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  // NET FLOW
+  /* ===== NET FLOW ===== */
   let inCount = 0;
   let outCount = 0;
 
@@ -143,7 +141,7 @@ async function scanWallet() {
     sumNetFlow.className = "value net-neutral";
   }
 
-  // INTENSITY
+  /* ===== INTENSITY ===== */
   const txPerDay = totalTx / diffDays;
 
   if (txPerDay < 0.2) {
@@ -157,11 +155,11 @@ async function scanWallet() {
     sumIntensity.className = "value intensity-high";
   }
 
-  // STREAK
+  /* ===== STREAK ===== */
   const streak = calculateStreak(currentTxs);
   sumStreak.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
 
-  // FILTER LABELS
+  /* ===== FILTER LABELS ===== */
   filterAll.textContent = `All (${totalTx})`;
   filterIn.textContent  = `IN (${inCount})`;
   filterOut.textContent = `OUT (${outCount})`;
@@ -185,7 +183,17 @@ function renderTransactions() {
     if (currentFilter === "out" && !isOut) return;
 
     const date = new Date(tx.time);
-    const formattedTime = date.toLocaleString();
+
+    // ✅ AM / PM FIX (FORCED)
+    const formattedTime = date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true
+    });
 
     const el = document.createElement("div");
     el.className = "tx";
