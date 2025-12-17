@@ -3,7 +3,7 @@ import { fetchTransactions } from "./fetchTxs.js";
 async function run() {
   console.log("Fetching ARC transactions...");
 
-  const txs = await fetchTransactions(); // ✅ agora está dentro de async
+  const txs = await fetchTransactions();
 
   console.log("Transactions fetched:", txs.length);
 
