@@ -13,7 +13,12 @@ const sumActive = document.getElementById("sumActive");
 const sumNetFlow = document.getElementById("sumNetFlow");
 const sumIntensity = document.getElementById("sumIntensity");
 
-// Filter state
+// Filter buttons
+const filterAll = document.querySelector('.filter-btn[data-filter="all"]');
+const filterIn  = document.querySelector('.filter-btn[data-filter="in"]');
+const filterOut = document.querySelector('.filter-btn[data-filter="out"]');
+
+// State
 let currentTxs = [];
 let currentAddress = "";
 let currentFilter = "all";
@@ -21,7 +26,7 @@ let currentFilter = "all";
 checkBtn.addEventListener("click", scanWallet);
 
 /* =========================
-   FILTER BUTTONS
+   FILTER CLICK
 ========================= */
 document.addEventListener("click", e => {
   if (!e.target.classList.contains("filter-btn")) return;
@@ -32,6 +37,7 @@ document.addEventListener("click", e => {
 
   e.target.classList.add("active");
   currentFilter = e.target.dataset.filter;
+
   renderTransactions();
 });
 
@@ -39,7 +45,6 @@ document.addEventListener("click", e => {
    HELPERS
 ========================= */
 function formatAddress(addr) {
-  if (!addr || addr.length < 10) return addr;
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 }
 
@@ -99,7 +104,7 @@ async function scanWallet() {
   sumActive.className = "value status-yes";
 
   /* =========================
-     NET FLOW
+     NET FLOW + COUNTS
   ========================= */
   let inCount = 0;
   let outCount = 0;
@@ -141,12 +146,24 @@ async function scanWallet() {
     sumIntensity.className = "value intensity-high";
   }
 
+  /* =========================
+     UPDATE FILTER LABELS
+  ========================= */
+  filterAll.textContent = `All (${totalTx})`;
+  filterIn.textContent  = `IN (${inCount})`;
+  filterOut.textContent = `OUT (${outCount})`;
+
+  currentFilter = "all";
+  filterAll.classList.add("active");
+  filterIn.classList.remove("active");
+  filterOut.classList.remove("active");
+
   renderTransactions();
   results.classList.remove("hidden");
 }
 
 /* =========================
-   RENDER TRANSACTIONS
+   RENDER TX LIST
 ========================= */
 function renderTransactions() {
   terminal.innerHTML = "";
