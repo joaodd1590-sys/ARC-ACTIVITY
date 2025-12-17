@@ -42,7 +42,7 @@ async function scanWallet() {
   const txs = data.transactions;
   const totalTx = txs.length;
 
-  // ---------- BASIC SUMMARY ----------
+  // ================= SUMMARY =================
   sumWallet.textContent = address;
   sumTotal.textContent = totalTx;
 
@@ -60,11 +60,11 @@ async function scanWallet() {
 
   sumDays.textContent = `${diffDays} days`;
 
-  // ---------- ACTIVE ----------
+  // Active
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  // ---------- NET FLOW (COLORED) ----------
+  // ================= NET FLOW =================
   let inCount = 0;
   let outCount = 0;
 
@@ -80,30 +80,30 @@ async function scanWallet() {
 
   if (netFlow > 0) {
     sumNetFlow.textContent = `+${netFlow} IN`;
-    sumNetFlow.className = "value net-in";
+    sumNetFlow.style.color = "#22c55e";
   } else if (netFlow < 0) {
     sumNetFlow.textContent = `${netFlow} OUT`;
-    sumNetFlow.className = "value net-out";
+    sumNetFlow.style.color = "#ef4444";
   } else {
     sumNetFlow.textContent = "Neutral";
-    sumNetFlow.className = "value net-neutral";
+    sumNetFlow.style.color = "#9ba3b5";
   }
 
-  // ---------- ACTIVITY INTENSITY ----------
+  // ================= ACTIVITY INTENSITY =================
   const txPerDay = totalTx / diffDays;
 
   if (txPerDay < 0.2) {
     sumIntensity.textContent = "Low";
-    sumIntensity.className = "value intensity-low";
+    sumIntensity.style.color = "#9ba3b5";
   } else if (txPerDay < 1) {
     sumIntensity.textContent = "Medium";
-    sumIntensity.className = "value intensity-medium";
+    sumIntensity.style.color = "#facc15";
   } else {
     sumIntensity.textContent = "High";
-    sumIntensity.className = "value intensity-high";
+    sumIntensity.style.color = "#22c55e";
   }
 
-  // ---------- TRANSACTIONS ----------
+  // ================= TRANSACTIONS =================
   txs.forEach(tx => {
     const el = document.createElement("div");
     el.className = "tx";
@@ -118,16 +118,43 @@ async function scanWallet() {
           <div class="addr-label">To</div>
           <div class="addr-value">${tx.to}</div>
         </div>
+
         <span class="${isOut ? "badge-out" : "badge-in"}">
           ${isOut ? "OUT" : "IN"}
         </span>
       </div>
 
       <div class="tx-bottom">
-        <div>${tx.total}</div>
-        <div>${tx.time}</div>
+        <div class="tx-meta">
+          <div class="tx-value">${tx.total}</div>
+          <div class="tx-time">${tx.time}</div>
+        </div>
+
+        <div class="tx-actions">
+          <button class="btn-secondary copy-btn">Copy</button>
+          <a
+            class="btn-secondary"
+            href="https://testnet.arcscan.app/tx/${tx.hash}"
+            target="_blank"
+          >
+            Explorer
+          </a>
+        </div>
       </div>
     `;
+
+    // Copy logic
+    const copyBtn = el.querySelector(".copy-btn");
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(tx.hash);
+      copyBtn.textContent = "Copied!";
+      copyBtn.classList.add("btn-copied");
+
+      setTimeout(() => {
+        copyBtn.textContent = "Copy";
+        copyBtn.classList.remove("btn-copied");
+      }, 1200);
+    });
 
     terminal.appendChild(el);
   });
