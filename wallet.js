@@ -20,7 +20,9 @@ let currentFilter = "all";
 
 checkBtn.addEventListener("click", scanWallet);
 
-/* ================= FILTER BUTTONS ================= */
+/* =========================
+   FILTER BUTTONS
+========================= */
 document.addEventListener("click", e => {
   if (!e.target.classList.contains("filter-btn")) return;
 
@@ -30,11 +32,20 @@ document.addEventListener("click", e => {
 
   e.target.classList.add("active");
   currentFilter = e.target.dataset.filter;
-
   renderTransactions();
 });
 
-/* ================= MAIN SCAN ================= */
+/* =========================
+   HELPERS
+========================= */
+function formatAddress(addr) {
+  if (!addr || addr.length < 10) return addr;
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+}
+
+/* =========================
+   MAIN SCAN
+========================= */
 async function scanWallet() {
   const address = addrInput.value.trim();
   if (!address || !address.startsWith("0x")) {
@@ -61,17 +72,13 @@ async function scanWallet() {
 
   currentTxs = data.transactions;
   currentAddress = address;
-  currentFilter = "all";
-
-  document.querySelectorAll(".filter-btn").forEach(btn =>
-    btn.classList.remove("active")
-  );
-  document.querySelector('.filter-btn[data-filter="all"]')?.classList.add("active");
 
   const totalTx = currentTxs.length;
 
-  /* ================= SUMMARY ================= */
-  sumWallet.textContent = address;
+  /* =========================
+     SUMMARY
+  ========================= */
+  sumWallet.textContent = formatAddress(address);
   sumTotal.textContent = totalTx;
 
   const times = currentTxs.map(tx => new Date(tx.time).getTime());
@@ -88,70 +95,65 @@ async function scanWallet() {
 
   sumDays.textContent = `${diffDays} days`;
 
-  // Active
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  /* ================= NET FLOW ================= */
+  /* =========================
+     NET FLOW
+  ========================= */
   let inCount = 0;
   let outCount = 0;
 
   currentTxs.forEach(tx => {
-    if (tx.from.toLowerCase() === address.toLowerCase()) outCount++;
-    else inCount++;
+    if (tx.from.toLowerCase() === address.toLowerCase()) {
+      outCount++;
+    } else {
+      inCount++;
+    }
   });
 
   const netFlow = inCount - outCount;
 
   if (netFlow > 0) {
     sumNetFlow.textContent = `+${netFlow} IN`;
-    sumNetFlow.style.color = "#22c55e";
+    sumNetFlow.className = "value net-in";
   } else if (netFlow < 0) {
     sumNetFlow.textContent = `${netFlow} OUT`;
-    sumNetFlow.style.color = "#ef4444";
+    sumNetFlow.className = "value net-out";
   } else {
     sumNetFlow.textContent = "Neutral";
-    sumNetFlow.style.color = "#9ba3b5";
+    sumNetFlow.className = "value net-neutral";
   }
 
-  /* ================= ACTIVITY INTENSITY ================= */
+  /* =========================
+     ACTIVITY INTENSITY
+  ========================= */
   const txPerDay = totalTx / diffDays;
 
   if (txPerDay < 0.2) {
     sumIntensity.textContent = "Low";
-    sumIntensity.style.color = "#9ba3b5";
+    sumIntensity.className = "value intensity-low";
   } else if (txPerDay < 1) {
     sumIntensity.textContent = "Medium";
-    sumIntensity.style.color = "#facc15";
+    sumIntensity.className = "value intensity-medium";
   } else {
     sumIntensity.textContent = "High";
-    sumIntensity.style.color = "#22c55e";
+    sumIntensity.className = "value intensity-high";
   }
-
-  /* ================= FILTER COUNTS ================= */
-  updateFilterCounts(inCount, outCount);
 
   renderTransactions();
   results.classList.remove("hidden");
 }
 
-/* ================= FILTER COUNTERS ================= */
-function updateFilterCounts(inCount, outCount) {
-  const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
-  const inBtn = document.querySelector('.filter-btn[data-filter="in"]');
-  const outBtn = document.querySelector('.filter-btn[data-filter="out"]');
-
-  if (allBtn) allBtn.textContent = `All (${currentTxs.length})`;
-  if (inBtn) inBtn.textContent = `IN (${inCount})`;
-  if (outBtn) outBtn.textContent = `OUT (${outCount})`;
-}
-
-/* ================= RENDER TX LIST ================= */
+/* =========================
+   RENDER TRANSACTIONS
+========================= */
 function renderTransactions() {
   terminal.innerHTML = "";
 
   currentTxs.forEach(tx => {
-    const isOut = tx.from.toLowerCase() === currentAddress.toLowerCase();
+    const isOut =
+      tx.from.toLowerCase() === currentAddress.toLowerCase();
 
     if (currentFilter === "in" && isOut) return;
     if (currentFilter === "out" && !isOut) return;
