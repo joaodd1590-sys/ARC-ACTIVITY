@@ -1,0 +1,14 @@
+[
+  {
+    "rank": 1,
+    "address": "0x1234567890abcdef",
+    "txCount": 42,
+    "score": 120
+  },
+  {
+    "rank": 2,
+    "address": "0xabcdef1234567890",
+    "txCount": 31,
+    "score": 95
+  }
+]
