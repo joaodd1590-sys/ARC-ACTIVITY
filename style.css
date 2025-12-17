@@ -326,3 +326,18 @@ body {
     margin-bottom: 20px;
   }
 }
+.intensity-low {
+  color: #9ca3af; /* gray */
+  font-weight: 600;
+}
+
+.intensity-medium {
+  color: #facc15; /* yellow */
+  font-weight: 600;
+}
+
+.intensity-high {
+  color: #22c55e; /* green */
+  font-weight: 600;
+}
+
