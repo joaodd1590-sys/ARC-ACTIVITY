@@ -489,6 +489,8 @@ body {
 
 .wallet-address {
   word-break: break-all;
+   font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 /* Mobile: truncate address like 0x63a1...c1c8 */
