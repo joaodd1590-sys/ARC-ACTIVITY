@@ -355,3 +355,36 @@ body {
   color: #9ca3af; /* gray */
   font-weight: 600;
 }
+/* ================= TX META ================= */
+
+.tx-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.tx-sep {
+  color: var(--text-muted);
+}
+
+/* ================= TX ACTION BUTTONS ================= */
+
+.tx-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tx-actions .btn-secondary {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+/* Copied feedback (mantém o visual antigo) */
+.btn-copied {
+  background: #2ecc71 !important;
+  color: #000 !important;
+}
+
