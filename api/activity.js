@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-
 const ARC_RPC = "https://testnet-rpc.arc.network";
 const ARC_SCAN =
   "https://testnet.arcscan.app/api?module=account&action=txlist";
@@ -9,7 +7,10 @@ const SYMBOL_CALL = "0x95d89b41"; // symbol()
 const tokenCache = {};
 
 async function getTokenSymbol(contract) {
-  if (!contract || contract === "0x0000000000000000000000000000000000000000") {
+  if (
+    !contract ||
+    contract === "0x0000000000000000000000000000000000000000"
+  ) {
     return "ARC";
   }
 
@@ -55,20 +56,21 @@ export default async function handler(req, res) {
     const json = await r.json();
 
     if (!json || !json.result) {
-      return res.status(200).json({ address, total: 0, transactions: [] });
+      return res.status(200).json({
+        address,
+        total: 0,
+        transactions: [],
+      });
     }
 
     const txs = [];
 
     for (const tx of json.result) {
-      let valueRaw = tx.value || "0";
-      if (valueRaw.startsWith("0x")) {
-        valueRaw = BigInt(valueRaw).toString();
-      }
+      let raw = tx.value || "0";
+      if (raw.startsWith("0x")) raw = BigInt(raw).toString();
 
-      const value = Number(BigInt(valueRaw)) / 1e18;
+      const value = Number(BigInt(raw)) / 1e18;
 
-      // Detect token
       const token = tx.contractAddress
         ? await getTokenSymbol(tx.contractAddress)
         : "ARC";
@@ -90,7 +92,7 @@ export default async function handler(req, res) {
       transactions: txs,
     });
   } catch (err) {
-    console.error("ACTIVITY ERROR", err);
+    console.error("ACTIVITY ERROR:", err);
     res.status(500).json({ error: "server error" });
   }
 }
