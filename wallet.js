@@ -64,7 +64,7 @@ async function scanWallet() {
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  // ---------- NET FLOW ----------
+  // ---------- NET FLOW (COLORED) ----------
   let inCount = 0;
   let outCount = 0;
 
@@ -80,10 +80,13 @@ async function scanWallet() {
 
   if (netFlow > 0) {
     sumNetFlow.textContent = `+${netFlow} IN`;
+    sumNetFlow.className = "value net-in";
   } else if (netFlow < 0) {
     sumNetFlow.textContent = `${netFlow} OUT`;
+    sumNetFlow.className = "value net-out";
   } else {
     sumNetFlow.textContent = "Neutral";
+    sumNetFlow.className = "value net-neutral";
   }
 
   // ---------- ACTIVITY INTENSITY ----------
@@ -91,13 +94,13 @@ async function scanWallet() {
 
   if (txPerDay < 0.2) {
     sumIntensity.textContent = "Low";
-    sumIntensity.className = "value intensity-low";     // cinza
+    sumIntensity.className = "value intensity-low";
   } else if (txPerDay < 1) {
     sumIntensity.textContent = "Medium";
-    sumIntensity.className = "value intensity-medium";  // amarelo
+    sumIntensity.className = "value intensity-medium";
   } else {
     sumIntensity.textContent = "High";
-    sumIntensity.className = "value intensity-high";    // verde
+    sumIntensity.className = "value intensity-high";
   }
 
   // ---------- TRANSACTIONS ----------
