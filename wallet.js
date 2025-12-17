@@ -181,9 +181,11 @@ function renderTransactions() {
 
   currentTxs.forEach(tx => {
     const isOut = tx.from.toLowerCase() === currentAddress.toLowerCase();
-
     if (currentFilter === "in" && isOut) return;
     if (currentFilter === "out" && !isOut) return;
+
+    const date = new Date(tx.time);
+    const formattedTime = date.toLocaleString();
 
     const el = document.createElement("div");
     el.className = "tx";
@@ -203,30 +205,25 @@ function renderTransactions() {
 
       <div class="tx-bottom">
         <div class="tx-meta">
-          <span class="tx-value">${tx.total}</span>
+          <span class="tx-value">
+            ${tx.total} ${tx.token}
+          </span>
           <span class="tx-sep">•</span>
-          <span class="tx-time">${tx.time}</span>
+          <span class="tx-time">${formattedTime}</span>
         </div>
 
         <div class="tx-actions">
           <button class="btn-secondary copy-btn">Copy</button>
-          <a class="btn-secondary" href="https://testnet.arcscan.app/tx/${tx.hash}" target="_blank">
+          <a class="btn-secondary" href="${tx.link}" target="_blank">
             Explorer
           </a>
         </div>
       </div>
     `;
 
-    el.querySelector(".copy-btn").addEventListener("click", e => {
+    el.querySelector(".copy-btn").onclick = () => {
       navigator.clipboard.writeText(tx.hash);
-      e.target.textContent = "Copied!";
-      e.target.classList.add("btn-copied");
-
-      setTimeout(() => {
-        e.target.textContent = "Copy";
-        e.target.classList.remove("btn-copied");
-      }, 1200);
-    });
+    };
 
     terminal.appendChild(el);
   });
