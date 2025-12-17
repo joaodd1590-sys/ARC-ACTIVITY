@@ -12,6 +12,7 @@ const sumDays = document.getElementById("sumDays");
 const sumActive = document.getElementById("sumActive");
 const sumNetFlow = document.getElementById("sumNetFlow");
 const sumIntensity = document.getElementById("sumIntensity");
+const sumStreak = document.getElementById("sumStreak");
 
 // Filter buttons
 const filterAll = document.querySelector('.filter-btn[data-filter="all"]');
@@ -46,6 +47,37 @@ document.addEventListener("click", e => {
 ========================= */
 function formatAddress(addr) {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+}
+
+function dateOnly(dateStr) {
+  const d = new Date(dateStr);
+  return d.toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+/* =========================
+   CONSECUTIVE DAYS LOGIC
+========================= */
+function calculateStreak(transactions) {
+  const days = new Set(
+    transactions.map(tx => dateOnly(tx.time))
+  );
+
+  const sortedDays = Array.from(days).sort().reverse();
+
+  let streak = 0;
+  let current = new Date(sortedDays[0]);
+
+  for (let day of sortedDays) {
+    const d = new Date(day);
+    if (d.toDateString() === current.toDateString()) {
+      streak++;
+      current.setDate(current.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return streak;
 }
 
 /* =========================
@@ -104,17 +136,14 @@ async function scanWallet() {
   sumActive.className = "value status-yes";
 
   /* =========================
-     NET FLOW + COUNTS
+     NET FLOW
   ========================= */
   let inCount = 0;
   let outCount = 0;
 
   currentTxs.forEach(tx => {
-    if (tx.from.toLowerCase() === address.toLowerCase()) {
-      outCount++;
-    } else {
-      inCount++;
-    }
+    if (tx.from.toLowerCase() === address.toLowerCase()) outCount++;
+    else inCount++;
   });
 
   const netFlow = inCount - outCount;
@@ -147,6 +176,12 @@ async function scanWallet() {
   }
 
   /* =========================
+     CONSECUTIVE DAYS
+  ========================= */
+  const streak = calculateStreak(currentTxs);
+  sumStreak.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
+
+  /* =========================
      UPDATE FILTER LABELS
   ========================= */
   filterAll.textContent = `All (${totalTx})`;
@@ -169,8 +204,7 @@ function renderTransactions() {
   terminal.innerHTML = "";
 
   currentTxs.forEach(tx => {
-    const isOut =
-      tx.from.toLowerCase() === currentAddress.toLowerCase();
+    const isOut = tx.from.toLowerCase() === currentAddress.toLowerCase();
 
     if (currentFilter === "in" && isOut) return;
     if (currentFilter === "out" && !isOut) return;
@@ -186,7 +220,6 @@ function renderTransactions() {
           <div class="addr-label">To</div>
           <div class="addr-value">${tx.to}</div>
         </div>
-
         <span class="${isOut ? "badge-out" : "badge-in"}">
           ${isOut ? "OUT" : "IN"}
         </span>
@@ -201,11 +234,7 @@ function renderTransactions() {
 
         <div class="tx-actions">
           <button class="btn-secondary copy-btn">Copy</button>
-          <a
-            class="btn-secondary"
-            href="https://testnet.arcscan.app/tx/${tx.hash}"
-            target="_blank"
-          >
+          <a class="btn-secondary" href="https://testnet.arcscan.app/tx/${tx.hash}" target="_blank">
             Explorer
           </a>
         </div>
