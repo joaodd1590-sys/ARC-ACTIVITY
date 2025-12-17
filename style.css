@@ -546,3 +546,15 @@ body {
 .footer-icons a:hover {
   color: var(--accent);
 }
+/* Remove mobile focus highlight */
+#addr:focus,
+#addr:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-color: var(--accent);
+}
+
+/* Remove tap highlight (Android / Chrome) */
+#addr {
+  -webkit-tap-highlight-color: transparent;
+}
