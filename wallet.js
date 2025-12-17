@@ -10,16 +10,12 @@ const sumFirst = document.getElementById("sumFirst");
 const sumLast = document.getElementById("sumLast");
 const sumDays = document.getElementById("sumDays");
 const sumActive = document.getElementById("sumActive");
-const sumBehavior = document.getElementById("sumBehavior");
 const sumNetFlow = document.getElementById("sumNetFlow");
-const sumAge = document.getElementById("sumAge");
-const sumIntensity = document.getElementById("sumIntensity");
 
 checkBtn.addEventListener("click", scanWallet);
 
 async function scanWallet() {
   const address = addrInput.value.trim();
-
   if (!address || !address.startsWith("0x")) {
     alert("Invalid wallet address");
     return;
@@ -32,7 +28,7 @@ async function scanWallet() {
   try {
     const res = await fetch(`/api/activity?address=${address}`);
     data = await res.json();
-  } catch (e) {
+  } catch {
     alert("Failed to fetch activity data");
     return;
   }
@@ -45,7 +41,7 @@ async function scanWallet() {
   const txs = data.transactions;
   const totalTx = txs.length;
 
-  // ---------------- BASIC SUMMARY ----------------
+  // BASIC SUMMARY
   sumWallet.textContent = address;
   sumTotal.textContent = totalTx;
 
@@ -63,11 +59,11 @@ async function scanWallet() {
 
   sumDays.textContent = `${diffDays} days`;
 
-  // ---------------- ACTIVE ----------------
+  // ACTIVE
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  // ---------------- NET FLOW + BEHAVIOR ----------------
+  // NET FLOW
   let inCount = 0;
   let outCount = 0;
 
@@ -89,47 +85,7 @@ async function scanWallet() {
     sumNetFlow.textContent = "Neutral";
   }
 
-  const inPct = inCount / totalTx;
-  const outPct = outCount / totalTx;
-
-  if (outPct > 0.6) {
-    sumBehavior.textContent = "Mostly Sender";
-    sumBehavior.className = "value behavior-sender";
-  } else if (inPct > 0.6) {
-    sumBehavior.textContent = "Mostly Receiver";
-    sumBehavior.className = "value behavior-receiver";
-  } else {
-    sumBehavior.textContent = "Balanced";
-    sumBehavior.className = "value behavior-balanced";
-  }
-
-  // ---------------- WALLET AGE ----------------
-  if (diffDays < 30) {
-    sumAge.textContent = "New";
-    sumAge.className = "value age-new";
-  } else if (diffDays < 180) {
-    sumAge.textContent = "Established";
-    sumAge.className = "value age-established";
-  } else {
-    sumAge.textContent = "Old";
-    sumAge.className = "value age-old";
-  }
-
-  // ---------------- ACTIVITY INTENSITY ----------------
-  const txPerDay = totalTx / diffDays;
-
-  if (txPerDay < 0.2) {
-    sumIntensity.textContent = "Low";
-    sumIntensity.className = "value intensity-low";
-  } else if (txPerDay < 1) {
-    sumIntensity.textContent = "Medium";
-    sumIntensity.className = "value intensity-medium";
-  } else {
-    sumIntensity.textContent = "High";
-    sumIntensity.className = "value intensity-high";
-  }
-
-  // ---------------- TRANSACTIONS ----------------
+  // TRANSACTIONS
   txs.forEach(tx => {
     const el = document.createElement("div");
     el.className = "tx";
