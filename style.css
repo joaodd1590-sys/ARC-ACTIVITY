@@ -412,5 +412,73 @@ body {
   color: #000;
   font-weight: 600;
 }
+/* ================= TX META ================= */
+
+.tx-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.tx-sep {
+  color: var(--text-muted);
+}
+
+/* ================= TX ACTION BUTTONS ================= */
+
+.tx-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tx-actions .btn-secondary {
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: #1b2333;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tx-actions .btn-secondary:hover {
+  background: #27334b;
+}
+
+/* Copied feedback */
+.btn-copied {
+  background: #2ecc71 !important;
+  color: #000 !important;
+}
+
+/* ================= FILTERS ================= */
+
+.tx-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: #1b2333;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.filter-btn:hover {
+  background: #27334b;
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  color: #000;
+  font-weight: 600;
+}
 
 
