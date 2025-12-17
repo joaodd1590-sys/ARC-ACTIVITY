@@ -1,12 +1,16 @@
 import { fetchTransactions } from "./fetchTxs.js";
 
-console.log("Fetching ARC transactions...");
+async function run() {
+  console.log("Fetching ARC transactions...");
 
-const txs = await fetchTransactions();
+  const txs = await fetchTransactions();
 
-console.log("Transactions fetched:", txs.length);
+  console.log("Transactions fetched:", txs.length);
 
-// mostra só a primeira transação (se existir)
-if (txs.length > 0) {
-  console.log("Sample tx:", txs[0]);
+  // show only the first transaction (if any)
+  if (txs.length > 0) {
+    console.log("Sample tx:", txs[0]);
+  }
 }
+
+run();
