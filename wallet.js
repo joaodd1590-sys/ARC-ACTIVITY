@@ -12,25 +12,21 @@ const sumDays = document.getElementById("sumDays");
 const sumActive = document.getElementById("sumActive");
 const sumNetFlow = document.getElementById("sumNetFlow");
 const sumIntensity = document.getElementById("sumIntensity");
+const sumStreak = document.getElementById("sumStreak");
 
-// Filter state
+// Filter buttons
+const filterAll = document.querySelector('.filter-btn[data-filter="all"]');
+const filterIn  = document.querySelector('.filter-btn[data-filter="in"]');
+const filterOut = document.querySelector('.filter-btn[data-filter="out"]');
+
+// State
 let currentTxs = [];
 let currentAddress = "";
 let currentFilter = "all";
 
 checkBtn.addEventListener("click", scanWallet);
 
-/* ================= HELPERS ================= */
-
-// Format value + token symbol (safe, backward-compatible)
-function formatTxValue(tx) {
-  const value = tx.total ?? tx.value ?? "-";
-  const symbol = tx.tokenSymbol || tx.symbol || "";
-  return symbol ? `${value} ${symbol}` : value;
-}
-
-/* ================= FILTER BUTTONS ================= */
-
+/* ================= FILTER ================= */
 document.addEventListener("click", e => {
   if (!e.target.classList.contains("filter-btn")) return;
 
@@ -43,8 +39,38 @@ document.addEventListener("click", e => {
   renderTransactions();
 });
 
-/* ================= MAIN SCAN ================= */
+/* ================= HELPERS ================= */
+function formatAddress(addr) {
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+}
 
+/* ================= STREAK (FIXED) ================= */
+function calculateStreak(transactions) {
+  const daySet = new Set(
+    transactions.map(tx => {
+      const d = new Date(tx.time);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    })
+  );
+
+  const days = Array.from(daySet).sort((a, b) => b - a);
+
+  let streak = 1;
+
+  for (let i = 1; i < days.length; i++) {
+    const diff = days[i - 1] - days[i];
+    if (diff === 86400000) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+/* ================= MAIN ================= */
 async function scanWallet() {
   const address = addrInput.value.trim();
   if (!address || !address.startsWith("0x")) {
@@ -74,9 +100,8 @@ async function scanWallet() {
 
   const totalTx = currentTxs.length;
 
-  /* ================= SUMMARY ================= */
-
-  sumWallet.textContent = address;
+  // SUMMARY
+  sumWallet.textContent = formatAddress(address);
   sumTotal.textContent = totalTx;
 
   const times = currentTxs.map(tx => new Date(tx.time).getTime());
@@ -88,7 +113,7 @@ async function scanWallet() {
 
   const diffDays = Math.max(
     1,
-    Math.ceil((last - first) / (1000 * 60 * 60 * 24))
+    Math.ceil((last - first) / 86400000)
   );
 
   sumDays.textContent = `${diffDays} days`;
@@ -96,17 +121,13 @@ async function scanWallet() {
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  /* ================= NET FLOW ================= */
-
+  // NET FLOW
   let inCount = 0;
   let outCount = 0;
 
   currentTxs.forEach(tx => {
-    if (tx.from.toLowerCase() === address.toLowerCase()) {
-      outCount++;
-    } else {
-      inCount++;
-    }
+    if (tx.from.toLowerCase() === address.toLowerCase()) outCount++;
+    else inCount++;
   });
 
   const netFlow = inCount - outCount;
@@ -122,8 +143,7 @@ async function scanWallet() {
     sumNetFlow.className = "value net-neutral";
   }
 
-  /* ================= ACTIVITY INTENSITY ================= */
-
+  // INTENSITY
   const txPerDay = totalTx / diffDays;
 
   if (txPerDay < 0.2) {
@@ -137,12 +157,25 @@ async function scanWallet() {
     sumIntensity.className = "value intensity-high";
   }
 
+  // STREAK
+  const streak = calculateStreak(currentTxs);
+  sumStreak.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
+
+  // FILTER LABELS
+  filterAll.textContent = `All (${totalTx})`;
+  filterIn.textContent  = `IN (${inCount})`;
+  filterOut.textContent = `OUT (${outCount})`;
+
+  currentFilter = "all";
+  filterAll.classList.add("active");
+  filterIn.classList.remove("active");
+  filterOut.classList.remove("active");
+
   renderTransactions();
   results.classList.remove("hidden");
 }
 
-/* ================= RENDER TRANSACTIONS ================= */
-
+/* ================= TX LIST ================= */
 function renderTransactions() {
   terminal.innerHTML = "";
 
@@ -163,7 +196,6 @@ function renderTransactions() {
           <div class="addr-label">To</div>
           <div class="addr-value">${tx.to}</div>
         </div>
-
         <span class="${isOut ? "badge-out" : "badge-in"}">
           ${isOut ? "OUT" : "IN"}
         </span>
@@ -171,25 +203,20 @@ function renderTransactions() {
 
       <div class="tx-bottom">
         <div class="tx-meta">
-          <span class="tx-value">${formatTxValue(tx)}</span>
+          <span class="tx-value">${tx.total}</span>
           <span class="tx-sep">•</span>
           <span class="tx-time">${tx.time}</span>
         </div>
 
         <div class="tx-actions">
           <button class="btn-secondary copy-btn">Copy</button>
-          <a
-            class="btn-secondary"
-            href="https://testnet.arcscan.app/tx/${tx.hash}"
-            target="_blank"
-          >
+          <a class="btn-secondary" href="https://testnet.arcscan.app/tx/${tx.hash}" target="_blank">
             Explorer
           </a>
         </div>
       </div>
     `;
 
-    // Copy hash
     el.querySelector(".copy-btn").addEventListener("click", e => {
       navigator.clipboard.writeText(tx.hash);
       e.target.textContent = "Copied!";
