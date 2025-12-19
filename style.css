@@ -558,26 +558,4 @@ body {
 #addr {
   -webkit-tap-highlight-color: transparent;
 }
-/* ================= FOOTER SVG LINK FIX ================= */
 
-.footer-icons a,
-.footer-icons a:visited,
-.footer-icons a:active {
-  color: var(--text-muted);
-}
-
-.footer-icons a svg {
-  fill: currentColor;
-  transition: transform 0.2s ease, fill 0.2s ease;
-}
-
-/* Hover */
-.footer-icons a:hover svg {
-  fill: var(--accent);
-  transform: scale(1.15);
-}
-
-/* Mobile tap fix */
-.footer-icons a:active svg {
-  fill: var(--accent);
-}
