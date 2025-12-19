@@ -558,3 +558,14 @@ body {
 #addr {
   -webkit-tap-highlight-color: transparent;
 }
+/* ================= FOOTER ICON LINK FIX ================= */
+
+.footer-icons a,
+.footer-icons a:visited,
+.footer-icons a:active {
+  color: var(--text-muted);
+}
+
+.footer-icons a:hover {
+  color: var(--accent);
+}
