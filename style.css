@@ -558,4 +558,21 @@ body {
 #addr {
   -webkit-tap-highlight-color: transparent;
 }
+/* ================= BUTTON CLICK FEEDBACK ================= */
+
+.btn-secondary {
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-secondary:active {
+  background: var(--accent);
+  color: #000;
+  transform: scale(0.96);
+}
+
+/* JS-triggered active state */
+.btn-active {
+  background: var(--accent) !important;
+  color: #000 !important;
+}
 
