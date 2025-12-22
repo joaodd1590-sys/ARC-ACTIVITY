@@ -58,11 +58,8 @@ function calculateStreak(transactions) {
   let streak = 1;
 
   for (let i = 1; i < sorted.length; i++) {
-    if (sorted[i - 1] - sorted[i] === 86400000) {
-      streak++;
-    } else {
-      break;
-    }
+    if (sorted[i - 1] - sorted[i] === 86400000) streak++;
+    else break;
   }
 
   return streak;
@@ -98,7 +95,7 @@ async function scanWallet() {
 
   const totalTx = currentTxs.length;
 
-  /* ===== SUMMARY ===== */
+  // ===== SUMMARY =====
   sumWallet.textContent = formatAddress(address);
   sumTotal.textContent = totalTx;
 
@@ -109,17 +106,13 @@ async function scanWallet() {
   sumFirst.textContent = first.toLocaleDateString();
   sumLast.textContent = last.toLocaleDateString();
 
-  const diffDays = Math.max(
-    1,
-    Math.ceil((last - first) / 86400000)
-  );
-
+  const diffDays = Math.max(1, Math.ceil((last - first) / 86400000));
   sumDays.textContent = `${diffDays} days`;
 
   sumActive.textContent = "Yes";
   sumActive.className = "value status-yes";
 
-  /* ===== NET FLOW ===== */
+  // ===== NET FLOW =====
   let inCount = 0;
   let outCount = 0;
 
@@ -141,7 +134,7 @@ async function scanWallet() {
     sumNetFlow.className = "value net-neutral";
   }
 
-  /* ===== INTENSITY ===== */
+  // ===== INTENSITY =====
   const txPerDay = totalTx / diffDays;
 
   if (txPerDay < 0.2) {
@@ -155,11 +148,11 @@ async function scanWallet() {
     sumIntensity.className = "value intensity-high";
   }
 
-  /* ===== STREAK ===== */
+  // ===== STREAK =====
   const streak = calculateStreak(currentTxs);
   sumStreak.textContent = `${streak} day${streak === 1 ? "" : "s"}`;
 
-  /* ===== FILTER LABELS ===== */
+  // ===== FILTER LABELS =====
   filterAll.textContent = `All (${totalTx})`;
   filterIn.textContent  = `IN (${inCount})`;
   filterOut.textContent = `OUT (${outCount})`;
@@ -184,7 +177,7 @@ function renderTransactions() {
 
     const date = new Date(tx.time);
 
-    // ✅ AM / PM FIX (FORCED)
+    // ✅ AM / PM
     const formattedTime = date.toLocaleString("en-US", {
       year: "numeric",
       month: "2-digit",
@@ -213,25 +206,39 @@ function renderTransactions() {
 
       <div class="tx-bottom">
         <div class="tx-meta">
-          <span class="tx-value">
-            ${tx.total} ${tx.token}
-          </span>
+          <span class="tx-value">${tx.total} ${tx.token}</span>
           <span class="tx-sep">•</span>
           <span class="tx-time">${formattedTime}</span>
         </div>
 
         <div class="tx-actions">
           <button class="btn-secondary copy-btn">Copy</button>
-          <a class="btn-secondary" href="${tx.link}" target="_blank">
+          <a class="btn-secondary explorer-btn" href="${tx.link}" target="_blank">
             Explorer
           </a>
         </div>
       </div>
     `;
 
-    el.querySelector(".copy-btn").onclick = () => {
+    // ===== BUTTON FEEDBACK =====
+    const copyBtn = el.querySelector(".copy-btn");
+    const explorerBtn = el.querySelector(".explorer-btn");
+
+    copyBtn.addEventListener("click", () => {
       navigator.clipboard.writeText(tx.hash);
-    };
+      copyBtn.textContent = "Copied!";
+      copyBtn.classList.add("btn-active");
+
+      setTimeout(() => {
+        copyBtn.textContent = "Copy";
+        copyBtn.classList.remove("btn-active");
+      }, 900);
+    });
+
+    explorerBtn.addEventListener("click", () => {
+      explorerBtn.classList.add("btn-active");
+      setTimeout(() => explorerBtn.classList.remove("btn-active"), 300);
+    });
 
     terminal.appendChild(el);
   });
